@@ -1,18 +1,11 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
-import { ToastPlugin, VBTogglePlugin, ModalPlugin } from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import ecomAuth from '@ecomplus/auth'
+import setup from './'
 
-Vue.use(ToastPlugin)
-Vue.use(VBTogglePlugin)
-Vue.use(ModalPlugin)
+if (!ecomAuth.checkLogin()) {
+  const username = window.localStorage.getItem('username')
+  if (username) {
+    ecomAuth.login(username, window.localStorage.getItem('password'))
+  }
+}
 
-Vue.config.productionTip = false
-
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#admin-home')
+setup()

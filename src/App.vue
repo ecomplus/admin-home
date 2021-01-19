@@ -1,9 +1,9 @@
 <template>
-  <div id="admin-home" class="mb-3">
+  <article id="admin-home" class="mb-3">
     <slide-x-left-transition :duration="{ enter: 400, leave: 0 }">
       <router-view/>
     </slide-x-left-transition>
-  </div>
+  </article>
 </template>
 
 <script>

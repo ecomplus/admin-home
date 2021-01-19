@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Homepage from '../views/Homepage.vue'
 import Graphs from '../views/Graphs.vue'
 
 Vue.use(VueRouter)
@@ -9,10 +9,10 @@ const routes = [
   {
     path: '/home',
     name: 'home',
-    component: Home
+    component: Homepage
   },
   {
-    path: '/graphs',
+    path: '/home/graphs',
     name: 'graphs',
     component: Graphs
   }
