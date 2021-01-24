@@ -1,6 +1,7 @@
 import {
-  // i19editStorefront,
+  i19attention,
   i19domain,
+  // i19editStorefront,
   i19goToStore
   // i19invalidDomainName
   // i19pressEnterToSave,
@@ -9,9 +10,14 @@ import {
 
 import { i18n } from '@ecomplus/utils'
 import ecomAuth from '@ecomplus/auth'
+import { SlideYUpTransition } from 'vue2-transitions'
 
 export default {
   name: 'EcHome',
+
+  components: {
+    SlideYUpTransition
+  },
 
   props: {
     ecomAuth: {
@@ -24,8 +30,8 @@ export default {
 
   data () {
     return {
+      storeId: null,
       store: {
-        store_id: null,
         name: null,
         homepage: null,
         domain: null,
@@ -38,6 +44,7 @@ export default {
   },
 
   computed: {
+    i19attention: () => i18n(i19attention),
     i19domain: () => i18n(i19domain),
     i19editStorefront: () => 'Editar frente de loja',
     i19goToStore: () => i18n(i19goToStore),
@@ -59,14 +66,19 @@ export default {
 
   methods: {
     updateStore () {
-      this.ecomAuth.requestApi('/stores/me', 'patch', this.store)
+      this.ecomAuth.requestApi('/stores/me.json', 'patch', this.store)
     },
 
     setDomain () {
       if (this.isLocalDomainValid) {
-        window.alert()
+        this.store.domain = this.localDomain
+        this.isEditingDomain = false
+        this.updateStore()
       } else {
-        // toast i19invalidDomainName
+        this.$bvToast.toast(this.i19invalidDomainName, {
+          variant: 'warning',
+          title: this.i19attention
+        })
       }
     }
   },
@@ -87,6 +99,7 @@ export default {
     const fetchStore = () => {
       ecomAuth.fetchStore()
         .then(store => {
+          this.storeId = store.store_id
           for (const field in this.store) {
             const val = store[field] || store.$main[field]
             if (this.store[field] !== undefined && val) {
