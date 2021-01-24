@@ -65,15 +65,17 @@ export default {
   },
 
   methods: {
-    updateStore () {
-      this.ecomAuth.requestApi('/stores/me.json', 'patch', this.store)
+    updateStore (data) {
+      this.ecomAuth.requestApi('stores/me', 'patch', data || this.store)
     },
 
     setDomain () {
       if (this.isLocalDomainValid) {
         this.store.domain = this.localDomain
         this.isEditingDomain = false
-        this.updateStore()
+        this.updateStore({
+          domain: this.localDomain
+        })
       } else {
         this.$bvToast.toast(this.i19invalidDomainName, {
           variant: 'warning',
