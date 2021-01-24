@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import { ToastPlugin, VBTogglePlugin, ModalPlugin } from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 export default () => {
   Vue.use(ToastPlugin)
