@@ -10,13 +10,17 @@ import {
 
 import { i18n } from '@ecomplus/utils'
 import ecomAuth from '@ecomplus/auth'
+import { BOverlay } from 'bootstrap-vue'
 import { SlideYUpTransition } from 'vue2-transitions'
+import { ShareNetwork } from 'vue-social-sharing'
 
 export default {
   name: 'EcHome',
 
   components: {
-    SlideYUpTransition
+    BOverlay,
+    SlideYUpTransition,
+    ShareNetwork
   },
 
   props: {
@@ -30,7 +34,8 @@ export default {
 
   data () {
     return {
-      storeId: null,
+      isLoading: true,
+      storeId: this.ecomAuth.storeId,
       store: {
         name: null,
         homepage: null,
@@ -66,7 +71,7 @@ export default {
 
   methods: {
     updateStore (data) {
-      this.ecomAuth.requestApi('stores/me', 'patch', data || this.store)
+      return this.ecomAuth.requestApi('stores/me', 'patch', data || this.store)
     },
 
     setDomain () {
@@ -82,6 +87,9 @@ export default {
           title: this.i19attention
         })
       }
+    },
+
+    fetchOrders () {
     }
   },
 
@@ -108,8 +116,12 @@ export default {
               this.store[field] = val
             }
           }
+          this.fetchOrders()
         })
         .catch(console.error)
+        .finally(() => {
+          this.isLoading = false
+        })
     }
     if (ecomAuth.checkLogin()) {
       fetchStore()
