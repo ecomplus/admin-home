@@ -13,22 +13,23 @@
     "url": "git+https://github.com/ecomplus/admin-home.git"
   },
   "author": "E-Com Club <ti@e-com.club>",
-  "license": "AGPL-3.0",
+  "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/ecomplus/admin-home/issues"
   },
   "homepage": "https://github.com/ecomplus/admin-home#readme",
   "dependencies": {
-    "@ecomplus/auth": "^1.0.0-rc.4",
+    "@ecomplus/admin-helpers": "^1.0.1",
+    "@ecomplus/auth": "^1.0.0-rc.5",
     "@ecomplus/client": "^2.2.0",
     "@ecomplus/i18n": "^1.18.0",
     "@ecomplus/utils": "^1.4.1",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.8.3",
     "vue": "^2.6.11",
-    "vue-router": "^3.2.0",
+    "vue-router": "^3.5.1",
     "vue2-transitions": "^0.3.0",
-    "vuex": "^3.4.0"
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
