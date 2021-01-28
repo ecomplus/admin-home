@@ -20,7 +20,7 @@
   "homepage": "https://github.com/ecomplus/admin-home#readme",
   "dependencies": {
     "@ecomplus/admin-helpers": "^1.0.1",
-    "@ecomplus/auth": "^1.0.0-rc.5",
+    "@ecomplus/auth": "^1.0.0-rc.6",
     "@ecomplus/client": "^2.2.0",
     "@ecomplus/i18n": "^1.18.0",
     "@ecomplus/utils": "^1.4.1",
