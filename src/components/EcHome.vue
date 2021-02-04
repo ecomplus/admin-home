@@ -12,7 +12,7 @@
                 >
                   <span class="text-light opacity-60">Store ID</span>
                   <span
-                    class="pl-3 text-secondary"
+                    class="pl-3 text-purple"
                     style="user-select: text"
                     v-text="storeId"
                   />
@@ -22,7 +22,7 @@
 
             <slide-y-up-transition>
               <div v-if="store.name">
-                <div class="my-3">
+                <div class="mt-4 mb-3">
                   <img
                     v-if="store.logo"
                     :src="store.logo.url"
@@ -74,7 +74,7 @@
                     </a>
                     <a
                       target="_blank"
-                      :href="store.homepage || `https://${store.domain}/`"
+                      :href="shopLink"
                       class="btn btn-sm btn-outline-primary"
                     >
                       <i class="ti-shopping-cart"></i>
@@ -120,7 +120,57 @@
             </slide-y-up-transition>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-4">
+            <b-overlay
+              v-if="!isLoading"
+              :show="isLoadingMetrics"
+            >
+              <div class="card shadow-0 text-right">
+                <div class="card-header no-border justify-content-end">
+                  <template v-if="orderMetrics.countCreated">
+                    <i class="fa fa-rocket text-purple fs-25"></i>
+                    <h6 class="card-title card-title-bold">
+                      {{ orderMetrics.countCreated }}
+                      <small>{{ i19newOrders }}</small>
+                    </h6>
+                  </template>
+                  <template v-else>
+                    <i class="fa fa-flag fs-25"></i>
+                    <h6 class="card-title card-title-bold text-right">
+                      <small>{{ i19noNewOrdersMsg }}</small>
+                    </h6>
+                  </template>
+                </div>
+
+                <div class="card-body pt-2">
+                  <div
+                    v-if="orderMetrics.countCreated"
+                    class="gap-items fs-18 mb-3"
+                  >
+                    <ShareNetwork
+                      v-for="network in ['whatsapp', 'telegram', 'facebook', 'twitter']"
+                      :key="network"
+                      :network="network"
+                      :class="`text-${network}`"
+                      :url="shopLink"
+                      :title="`Nossa loja ${store.name} fez ${orderMetrics.countCreated} novos pedidos 🚀 !`"
+                      hashtags="vendermais,ecomplus"
+                    >
+                      <i :class="`fa fa-${network}`"></i>
+                    </ShareNetwork>
+                  </div>
+
+                  <template v-if="orderMetrics.paidAmount">
+                    <em class="fw-200">
+                      {{ i19paymentConfirmed }}
+                    </em>
+                    <div class="fs-30">
+                      {{ formatMoney(orderMetrics.paidAmount) }}
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </b-overlay>
           </div>
         </div>
       </div>

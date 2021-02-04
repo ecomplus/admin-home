@@ -8,6 +8,7 @@ if (!ecomAuth.checkLogin()) {
   if (username) {
     ecomAuth.login(username, window.localStorage.getItem('password'))
     $ecomConfig.set('lang', window.localStorage.getItem('lang') || 'pt_br')
+    $ecomConfig.set('currency', window.localStorage.getItem('currency') || 'BRL')
   }
 }
 
