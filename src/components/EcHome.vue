@@ -33,7 +33,7 @@
                 </div>
                 <h1>{{ store.name }}</h1>
 
-                <p>
+                <div>
                   <a
                     :href="`mailto:${store.financial_email}`"
                     target="_blank"
@@ -46,6 +46,7 @@
                     <a
                       :href="`https://${store.domain}`"
                       target="_blank"
+                      class="fw-500"
                     >
                       {{ store.domain }}
                     </a>
@@ -58,14 +59,14 @@
                       <i class="ti-pencil"></i>
                     </a>
                   </template>
-                </p>
+                </div>
 
                 <slide-y-up-transition>
                   <div v-if="store.domain">
                     <a
                       target="_blank"
                       :href="`https://${store.domain}/admin/`"
-                      class="btn btn-sm btn-outline-primary mr-3"
+                      class="btn btn-sm btn-primary mr-3 mt-2"
                     >
                       <i class="ti-paint-roller"></i>
                       <span class="ml-1 d-none d-md-inline">
@@ -75,7 +76,7 @@
                     <a
                       target="_blank"
                       :href="shopLink"
-                      class="btn btn-sm btn-outline-primary"
+                      class="btn btn-sm btn-primary mt-2"
                     >
                       <i class="ti-shopping-cart"></i>
                       <span class="ml-1 d-none d-md-inline">
@@ -120,29 +121,71 @@
             </slide-y-up-transition>
           </div>
 
-          <div class="col-md-4">
-            <b-overlay
-              v-if="!isLoading"
-              :show="isLoadingMetrics"
-            >
-              <div class="card shadow-0 text-right">
-                <div class="card-header no-border justify-content-end">
-                  <template v-if="orderMetrics.countCreated">
-                    <i class="fa fa-rocket text-purple fs-25"></i>
-                    <h6 class="card-title card-title-bold">
-                      {{ orderMetrics.countCreated }}
-                      <small>{{ i19newOrders }}</small>
-                    </h6>
-                  </template>
-                  <template v-else>
-                    <i class="fa fa-flag fs-25"></i>
-                    <h6 class="card-title card-title-bold text-right">
-                      <small>{{ i19noNewOrdersMsg }}</small>
-                    </h6>
-                  </template>
-                </div>
+          <div class="col-md-5 mt-3 mt-md-0 text-right">
+            <p>
+              <a
+                target="_blank"
+                :href="shopLink"
+                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
+              >
+                Mês anterior
+              </a>
+              <a
+                target="_blank"
+                :href="shopLink"
+                class="ml-2 mt-2 btn btn-xs btn-secondary"
+              >
+                Mês atual
+              </a>
+              <a
+                target="_blank"
+                :href="shopLink"
+                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
+              >
+                30 dias
+              </a>
+              <a
+                target="_blank"
+                :href="shopLink"
+                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
+              >
+                7 dias
+              </a>
+              <a
+                target="_blank"
+                :href="shopLink"
+                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
+              >
+                Ontem
+              </a>
+              <a
+                target="_blank"
+                :href="shopLink"
+                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
+              >
+                Hoje
+              </a>
+            </p>
 
-                <div class="card-body pt-2">
+            <fade-transition>
+              <div v-if="!isLoading && !isLoadingMetrics">
+                <div
+                  v-if="orderMetrics.countCreated"
+                  class="d-flex align-items-center justify-content-end text-purple"
+                >
+                  <strong class="fs-40">
+                    {{ orderMetrics.countCreated }}
+                  </strong>
+                  <small class="mx-2 text-uppercase">
+                    {{ i19newOrders }}
+                  </small>
+                  <i class="fa fa-rocket opacity-50 fs-26"></i>
+                </div>
+                <span v-else>
+                  {{ i19noNewOrdersMsg }}
+                </span>
+
+                <div class="pt-2">
                   <div
                     v-if="orderMetrics.countCreated"
                     class="gap-items fs-18 mb-3"
@@ -170,7 +213,16 @@
                   </template>
                 </div>
               </div>
-            </b-overlay>
+            </fade-transition>
+
+            <div
+              v-if="isLoadingMetrics"
+              class="spinner-grow"
+              style="width: 3rem; height: 3rem;"
+              role="status"
+            >
+              <span class="sr-only">Loading...</span>
+            </div>
           </div>
         </div>
       </div>

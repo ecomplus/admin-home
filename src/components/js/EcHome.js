@@ -19,7 +19,7 @@ import {
 
 import ecomAuth from '@ecomplus/auth'
 import { BOverlay } from 'bootstrap-vue'
-import { SlideYUpTransition } from 'vue2-transitions'
+import { FadeTransition, SlideYUpTransition } from 'vue2-transitions'
 import { ShareNetwork } from 'vue-social-sharing'
 
 export default {
@@ -27,6 +27,7 @@ export default {
 
   components: {
     BOverlay,
+    FadeTransition,
     SlideYUpTransition,
     ShareNetwork
   },
