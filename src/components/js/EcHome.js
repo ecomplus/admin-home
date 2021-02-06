@@ -21,6 +21,7 @@ import ecomAuth from '@ecomplus/auth'
 import { BOverlay } from 'bootstrap-vue'
 import { FadeTransition, SlideYUpTransition } from 'vue2-transitions'
 import { ShareNetwork } from 'vue-social-sharing'
+import EcDatesPicker from '../EcDatesPicker.vue'
 
 export default {
   name: 'EcHome',
@@ -29,7 +30,8 @@ export default {
     BOverlay,
     FadeTransition,
     SlideYUpTransition,
-    ShareNetwork
+    ShareNetwork,
+    EcDatesPicker
   },
 
   props: {
@@ -54,6 +56,7 @@ export default {
       },
       localDomain: '',
       isEditingDomain: false,
+      dateRange: {},
       orderMetrics: {
         countCreated: 0,
         paidAmount: 0

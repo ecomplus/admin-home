@@ -122,53 +122,13 @@
           </div>
 
           <div class="col-md-5 mt-3 mt-md-0 text-right">
-            <p>
-              <a
-                target="_blank"
-                :href="shopLink"
-                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
-              >
-                Mês anterior
-              </a>
-              <a
-                target="_blank"
-                :href="shopLink"
-                class="ml-2 mt-2 btn btn-xs btn-secondary"
-              >
-                Mês atual
-              </a>
-              <a
-                target="_blank"
-                :href="shopLink"
-                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
-              >
-                30 dias
-              </a>
-              <a
-                target="_blank"
-                :href="shopLink"
-                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
-              >
-                7 dias
-              </a>
-              <a
-                target="_blank"
-                :href="shopLink"
-                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
-              >
-                Ontem
-              </a>
-              <a
-                target="_blank"
-                :href="shopLink"
-                class="ml-2 mt-2 btn btn-xs btn-outline-secondary"
-              >
-                Hoje
-              </a>
-            </p>
-
             <fade-transition>
               <div v-if="!isLoading && !isLoadingMetrics">
+                <ec-dates-picker
+                  class="mb-3"
+                  v-model="dateRange"
+                />
+
                 <div
                   v-if="orderMetrics.countCreated"
                   class="d-flex align-items-center justify-content-end text-purple"
