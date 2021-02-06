@@ -4,6 +4,7 @@
     :locale-data="locale"
     :ranges="ranges"
     :max-date="new Date()"
+    @update="saveDateRange"
   >
   </date-range-picker>
 </template>

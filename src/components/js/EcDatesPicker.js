@@ -2,6 +2,14 @@ import { $ecomConfig } from '@ecomplus/utils'
 import DateRangePicker from 'vue2-daterange-picker'
 import 'vue2-daterange-picker/dist/vue2-daterange-picker.css'
 
+const createNormalizedDate = () => {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+const storageKey = 'EcDatesPicker_range'
+
 export default {
   name: 'EcDatesPicker',
 
@@ -14,8 +22,56 @@ export default {
   },
 
   computed: {
-    today: () => new Date(),
     isPt: () => $ecomConfig.get('lang').startsWith('pt'),
+    today: () => createNormalizedDate(),
+
+    yesterday () {
+      const { today } = this
+      const d = createNormalizedDate()
+      d.setDate(today.getDate() - 1)
+      return d
+    },
+
+    weekFirstDay () {
+      const { today } = this
+      const d = createNormalizedDate()
+      d.setDate(today.getDate() - today.getDay())
+      return d
+    },
+
+    past7days () {
+      const { today } = this
+      const d = createNormalizedDate()
+      d.setDate(today.getDate() - 7)
+      return d
+    },
+
+    past30days () {
+      const { today } = this
+      const d = createNormalizedDate()
+      d.setDate(today.getDate() - 30)
+      return d
+    },
+
+    monthFirstDay () {
+      const { today } = this
+      return new Date(today.getFullYear(), today.getMonth(), 1)
+    },
+
+    pastMonthFirstDay () {
+      const { today } = this
+      return new Date(today.getFullYear(), today.getMonth() - 1, 1)
+    },
+
+    pastMonthLastDay () {
+      const { today } = this
+      return new Date(today.getFullYear(), today.getMonth(), 0)
+    },
+
+    yearFirstDay () {
+      const { today } = this
+      return new Date(today.getFullYear(), 0, 1)
+    },
 
     dateRange: {
       get () {
@@ -44,64 +100,78 @@ export default {
     },
 
     ranges () {
-      if (this.isPt) {
-        const { today } = this
-        const yesterday = new Date()
-        yesterday.setDate(today.getDate() - 1)
-        const weekFirstDay = new Date()
-        weekFirstDay.setDate(today.getDate() - today.getDay())
-        const past7days = new Date()
-        past7days.setDate(today.getDate() - 6)
-        const past30days = new Date()
-        past30days.setDate(today.getDate() - 29)
-        return {
-          Hoje: [
-            today,
-            today
-          ],
-          Ontem: [
-            yesterday,
-            yesterday
-          ],
-          'Esta semana': [
-            weekFirstDay,
-            today
-          ],
-          'Últimos 7 dias': [
-            past7days,
-            today
-          ],
-          'Este mês': [
-            new Date(today.getFullYear(), today.getMonth(), 1),
-            today
-          ],
-          'Últimos 30 dias': [
-            past30days,
-            today
-          ],
-          'Mês passado': [
-            new Date(today.getFullYear(), today.getMonth() - 1, 1),
-            new Date(today.getFullYear(), today.getMonth(), 0)
-          ],
-          'Este ano': [
-            new Date(today.getFullYear(), 0, 1),
-            today
-          ],
-          'Todo o período': [
-            null,
-            null
-          ]
+      const {
+        isPt,
+        today,
+        yesterday,
+        weekFirstDay,
+        past7days,
+        past30days,
+        monthFirstDay,
+        pastMonthFirstDay,
+        pastMonthLastDay,
+        yearFirstDay
+      } = this
+      return {
+        [isPt ? 'Hoje' : 'Today']: [today, today],
+        [isPt ? 'Ontem' : 'Yesterday']: [yesterday, yesterday],
+        [isPt ? 'Esta semana' : 'This week']: [weekFirstDay, today],
+        [isPt ? '7 dias atrás' : 'Past 7 days']: [past7days, yesterday],
+        [isPt ? 'Este mês' : 'This month']: [monthFirstDay, today],
+        [isPt ? '30 dias atrás' : 'Past 30 days']: [past30days, yesterday],
+        [isPt ? 'Mês passado' : 'Last month']: [pastMonthFirstDay, pastMonthLastDay],
+        [isPt ? 'Este ano' : 'This year']: [yearFirstDay, today],
+        [isPt ? 'Todo o período' : 'All period']: [null, null]
+      }
+    }
+  },
+
+  methods: {
+    saveDateRange (dateRange) {
+      const { ranges } = this
+      for (const rangeName in ranges) {
+        const range = ranges[rangeName]
+        if (
+          range &&
+          range[0] &&
+          range[0].getTime() === dateRange.startDate.getTime() &&
+          range[1].getTime() === dateRange.endDate.getTime()
+        ) {
+          window.localStorage.setItem(storageKey, rangeName)
+          return
         }
       }
-      return null
+      window.localStorage.setItem(storageKey, JSON.stringify(dateRange))
     }
   },
 
   created () {
+    const storedRange = window.localStorage.getItem(storageKey)
+    if (storedRange) {
+      if (storedRange.charAt(0) === '{') {
+        try {
+          this.dateRange = JSON.parse(storedRange)
+          return
+        } catch (e) {
+        }
+      } else {
+        const { ranges } = this
+        for (const rangeName in ranges) {
+          if (rangeName === storedRange) {
+            const range = ranges[rangeName]
+            this.dateRange = {
+              startDate: range[0],
+              endDate: range[1]
+            }
+            return
+          }
+        }
+      }
+    }
     let start, end
-    const { today, dateRange } = this
+    const { today, monthFirstDay, dateRange } = this
     if (!dateRange.startDate) {
-      start = new Date(today.getFullYear(), today.getMonth(), 1)
+      start = monthFirstDay
     }
     if (!dateRange.endDate) {
       end = today

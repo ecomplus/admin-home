@@ -156,6 +156,9 @@ export default {
         })
         this.localDomain = this.store.domain
       }
+    },
+
+    dateRange ({ startDate, endDate }) {
     }
   },
 
