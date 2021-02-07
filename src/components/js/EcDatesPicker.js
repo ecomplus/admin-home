@@ -150,7 +150,11 @@ export default {
     if (storedRange) {
       if (storedRange.charAt(0) === '{') {
         try {
-          this.dateRange = JSON.parse(storedRange)
+          const { startDate, endDate } = JSON.parse(storedRange)
+          this.dateRange = {
+            startDate: new Date(startDate),
+            endDate: new Date(endDate)
+          }
           return
         } catch (e) {
         }
