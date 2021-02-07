@@ -131,11 +131,15 @@
 
             <div
               v-if="isLoadingMetrics"
-              class="spinner-grow p-absolute"
-              style="width: 3rem; height: 3rem;"
-              role="status"
+              style="position: absolute; right: 1rem"
             >
-              <span class="sr-only">Loading...</span>
+              <div
+                class="spinner-grow"
+                style="width: 3rem; height: 3rem;"
+                role="status"
+              >
+                <span class="sr-only">Loading...</span>
+              </div>
             </div>
 
             <fade-transition>
