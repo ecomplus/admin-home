@@ -224,6 +224,14 @@
         </div>
       </div>
     </b-overlay>
+
+    <slide-y-up-transition>
+      <ec-home-cards
+        v-if="hasLoadedMetrics"
+        :start-date="dateRangeIso.start"
+        :end-date="dateRangeIso.end"
+      />
+    </slide-y-up-transition>
   </div>
 </template>
 

@@ -22,6 +22,7 @@ import { BOverlay } from 'bootstrap-vue'
 import { FadeTransition, SlideYUpTransition } from 'vue2-transitions'
 import { ShareNetwork } from 'vue-social-sharing'
 import EcDatesPicker from '../EcDatesPicker.vue'
+import EcHomeCards from '../EcHomeCards.vue'
 
 const formatDiffPercent = (diffVal, compareVal) => {
   return compareVal &&
@@ -36,7 +37,8 @@ export default {
     FadeTransition,
     SlideYUpTransition,
     ShareNetwork,
-    EcDatesPicker
+    EcDatesPicker,
+    EcHomeCards
   },
 
   props: {
@@ -70,7 +72,8 @@ export default {
         countCreated: null,
         paidAmount: null
       },
-      isLoadingMetrics: false
+      isLoadingMetrics: false,
+      hasLoadedMetrics: false
     }
   },
 
@@ -258,6 +261,7 @@ export default {
         })
         .finally(() => {
           this.isLoadingMetrics = false
+          this.hasLoadedMetrics = true
         })
     }
   },
