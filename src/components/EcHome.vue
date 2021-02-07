@@ -122,24 +122,51 @@
           </div>
 
           <div class="col-md-5 mt-3 mt-md-0 text-right">
+            <div class="mb-3">
+              <ec-dates-picker
+                v-if="!isLoading"
+                v-model="dateRange"
+              />
+            </div>
+
+            <div
+              v-if="isLoadingMetrics"
+              class="spinner-grow p-absolute"
+              style="width: 3rem; height: 3rem;"
+              role="status"
+            >
+              <span class="sr-only">Loading...</span>
+            </div>
+
             <fade-transition>
               <div v-if="!isLoading && !isLoadingMetrics">
-                <ec-dates-picker
-                  class="mb-3"
-                  v-model="dateRange"
-                />
-
                 <div
                   v-if="orderMetrics.countCreated"
-                  class="d-flex align-items-center justify-content-end text-purple"
+                  class="d-flex align-items-center justify-content-end"
                 >
-                  <strong class="fs-40">
+                  <strong class="fs-40 text-purple">
                     {{ orderMetrics.countCreated }}
                   </strong>
-                  <small class="mx-2 text-uppercase">
+                  <span class="ml-2 text-uppercase lh-1">
                     {{ i19newOrders }}
-                  </small>
-                  <i class="fa fa-rocket opacity-50 fs-26"></i>
+                    <template v-if="countOrdersDiff !== null">
+                      <br>
+                      <span
+                        class="fs-15"
+                        :class="countOrdersDiff > 0 ? 'text-success' : 'text-danger'"
+                        v-b-tooltip.hover.bottomleft="i19comparedPreviousPeriodMsg"
+                      >
+                        <i
+                          class="fa"
+                          :class="`fa-arrow-circle-${(countOrdersDiff > 0 ? 'up' : 'down')}`"
+                        ></i>
+                        {{ (countOrdersDiff > 0 ? '+' : '') + countOrdersDiff }}
+                        <strong v-if="countOrdersDiffPercent">
+                          {{ countOrdersDiffPercent }}
+                        </strong>
+                      </span>
+                    </template>
+                  </span>
                 </div>
                 <span v-else>
                   {{ i19noNewOrdersMsg }}
@@ -167,22 +194,28 @@
                     <em class="fw-200">
                       {{ i19paymentConfirmed }}
                     </em>
-                    <div class="fs-30">
+                    <div class="fs-30 lh-1">
                       {{ formatMoney(orderMetrics.paidAmount) }}
                     </div>
+                    <span
+                      v-if="paidAmountDiff !== null"
+                      class="fs-14"
+                      :class="paidAmountDiff > 0 ? 'text-success' : 'text-danger'"
+                      v-b-tooltip.hover.bottomleft="i19comparedPreviousPeriodMsg"
+                    >
+                      <i
+                        class="fa"
+                        :class="`fa-arrow-circle-${(paidAmountDiff > 0 ? 'up' : 'down')}`"
+                      ></i>
+                      {{ (paidAmountDiff > 0 ? '+' : '') + formatMoney(paidAmountDiff) }}
+                      <strong v-if="paidAmountDiffPercent">
+                        {{ paidAmountDiffPercent }}
+                      </strong>
+                    </span>
                   </template>
                 </div>
               </div>
             </fade-transition>
-
-            <div
-              v-if="isLoadingMetrics"
-              class="spinner-grow"
-              style="width: 3rem; height: 3rem;"
-              role="status"
-            >
-              <span class="sr-only">Loading...</span>
-            </div>
           </div>
         </div>
       </div>

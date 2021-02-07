@@ -23,6 +23,11 @@ import { FadeTransition, SlideYUpTransition } from 'vue2-transitions'
 import { ShareNetwork } from 'vue-social-sharing'
 import EcDatesPicker from '../EcDatesPicker.vue'
 
+const formatDiffPercent = (diffVal, compareVal) => {
+  return compareVal &&
+    Math.abs(diffVal * 100 / compareVal).toFixed(2).replace('.', ',') + '%'
+}
+
 export default {
   name: 'EcHome',
 
@@ -61,12 +66,17 @@ export default {
         countCreated: 0,
         paidAmount: 0
       },
+      compareOrderMetrics: {
+        countCreated: null,
+        paidAmount: null
+      },
       isLoadingMetrics: false
     }
   },
 
   computed: {
     i19attention: () => i18n(i19attention),
+    i19comparedPreviousPeriodMsg: () => 'Comparado ao período anterior (mesmo número de dias).',
     i19domain: () => i18n(i19domain),
     i19editStorefront: () => 'Editar frente de loja',
     i19goToStore: () => i18n(i19goToStore),
@@ -91,6 +101,72 @@ export default {
       return this.isEditingDomain && this.isLocalDomainValid
         ? this.i19pressEnterToSave
         : this.i19setDomainMsg
+    },
+
+    fixedDateRange () {
+      let { startDate, endDate } = this.dateRange
+      if (startDate) {
+        startDate = new Date(startDate.getTime())
+        startDate.setHours(0, 0, 0, 0)
+      }
+      if (endDate) {
+        endDate = new Date(endDate.getTime())
+        endDate.setHours(23, 59, 59, 999)
+      }
+      return { startDate, endDate }
+    },
+
+    dateRangeIso () {
+      const { startDate, endDate } = this.fixedDateRange
+      let start, end
+      if (startDate) {
+        start = startDate.toISOString()
+      }
+      const d = new Date()
+      d.setHours(0, 0, 0, 0)
+      if (endDate && endDate.getTime() < d.getTime()) {
+        end = endDate.toISOString()
+      }
+      return { start, end }
+    },
+
+    compareDateRangeIso () {
+      const { startDate, endDate } = this.fixedDateRange
+      if (!startDate || !endDate) {
+        return null
+      }
+      const timeDiff = endDate.getTime() - startDate.getTime()
+      let d = new Date(startDate.getTime() - timeDiff)
+      const start = d.toISOString()
+      d = new Date(startDate.getTime() - 1)
+      return {
+        start,
+        end: d.toISOString()
+      }
+    },
+
+    countOrdersDiff () {
+      const { countCreated } = this.compareOrderMetrics
+      if (countCreated !== null) {
+        return this.orderMetrics.countCreated - countCreated
+      }
+      return null
+    },
+
+    countOrdersDiffPercent () {
+      return formatDiffPercent(this.countOrdersDiff, this.compareOrderMetrics.countCreated)
+    },
+
+    paidAmountDiff () {
+      const { paidAmount } = this.compareOrderMetrics
+      if (paidAmount !== null) {
+        return this.orderMetrics.paidAmount - paidAmount
+      }
+      return null
+    },
+
+    paidAmountDiffPercent () {
+      return formatDiffPercent(this.paidAmountDiff, this.compareOrderMetrics.paidAmount)
     }
   },
 
@@ -116,35 +192,47 @@ export default {
       }
     },
 
-    fetchOrderMetrics () {
-      const d = new Date()
-      const minDateIso = new Date(d.getFullYear(), d.getMonth(), 1).toISOString()
-      this.isLoadingMetrics = true
-      this.ecomAuth.requestApi('$count', 'post', {
+    fetchOrderMetrics (isCompare) {
+      const dateRangeIso = isCompare ? this.compareDateRangeIso : this.dateRangeIso
+      if (!dateRangeIso) {
+        return
+      }
+      const orderMetrics = isCompare ? this.compareOrderMetrics : this.orderMetrics
+      const { start, end } = dateRangeIso
+      return this.ecomAuth.requestApi('$count', 'post', {
         resource: 'orders'
       }, {
         params: {
-          'created_at>': minDateIso
+          'created_at>': start,
+          'created_at<': end
         }
       })
         .then(({ data }) => {
-          this.orderMetrics.countCreated = data.count
+          orderMetrics.countCreated = data.count
+          const pipeline = []
+          if (start) {
+            pipeline.push({
+              $match: { 'financial_status.updated_at': { $gte: start } }
+            })
+          }
+          if (end) {
+            pipeline.push({
+              $match: { 'financial_status.updated_at': { $lte: end } }
+            })
+          }
+          pipeline.push(
+            { $match: { 'financial_status.current': 'paid' } },
+            { $group: { _id: null, total: { $sum: '$amount.total' } } }
+          )
           return this.ecomAuth.requestApi('$aggregate', 'post', {
             resource: 'orders',
-            pipeline: [
-              { $match: { 'financial_status.updated_at': { $gte: minDateIso } } },
-              { $match: { 'financial_status.current': 'paid' } },
-              { $group: { _id: null, total: { $sum: '$amount.total' } } }
-            ]
+            pipeline
           })
         })
         .then(({ data }) => {
-          this.orderMetrics.paidAmount = (data.result[0] && data.result[0].total) || 0
+          orderMetrics.paidAmount = (data.result[0] && data.result[0].total) || 0
         })
         .catch(console.error)
-        .finally(() => {
-          this.isLoadingMetrics = false
-        })
     }
   },
 
@@ -159,6 +247,18 @@ export default {
     },
 
     dateRange ({ startDate, endDate }) {
+      this.compareOrderMetrics = {
+        countCreated: null,
+        paidAmount: null
+      }
+      this.isLoadingMetrics = true
+      this.fetchOrderMetrics()
+        .then(() => {
+          this.fetchOrderMetrics(true)
+        })
+        .finally(() => {
+          this.isLoadingMetrics = false
+        })
     }
   },
 
@@ -176,7 +276,6 @@ export default {
             }
           }
           if (!hasStarted) {
-            this.fetchOrderMetrics()
             ecomAuth.on('updateStore', fetchStore)
             hasStarted = true
           }
