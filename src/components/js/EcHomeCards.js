@@ -21,25 +21,17 @@ export default {
   },
 
   created () {
-    const { ecomAuth } = this
-    const fetchAuthentication = () => {
-      ecomAuth.fetchAuthentication()
-        .then(authentication => {
-          this.cards = authentication.panel_cards || []
-        })
-        .catch(console.error)
-        .finally(() => {
-          if (!this.cards.length) {
-            this.cards = [{
-              card_id: 'orders_amount_7d'
-            }]
-          }
-        })
-    }
-    if (ecomAuth.checkLogin()) {
-      fetchAuthentication()
-    } else {
-      ecomAuth.on('login', fetchAuthentication)
-    }
+    ecomAuth.fetchAuthentication()
+      .then(authentication => {
+        this.cards = authentication.panel_cards || []
+      })
+      .catch(console.error)
+      .finally(() => {
+        if (!this.cards.length) {
+          this.cards = [{
+            card_id: 'orders_amount_7d'
+          }]
+        }
+      })
   }
 }

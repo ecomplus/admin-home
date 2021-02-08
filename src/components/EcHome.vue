@@ -226,8 +226,15 @@
     </b-overlay>
 
     <slide-y-up-transition>
+      <ec-orders-graphs
+        v-if="hasLoadedAllMetrics"
+        @load="hasLoadedOrdersGraphs = true"
+      />
+    </slide-y-up-transition>
+
+    <slide-y-up-transition>
       <ec-home-cards
-        v-if="hasLoadedMetrics"
+        v-if="hasLoadedOrdersGraphs"
         :start-date="dateRangeIso.start"
         :end-date="dateRangeIso.end"
       />
