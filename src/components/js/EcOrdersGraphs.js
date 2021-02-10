@@ -1,11 +1,32 @@
-import ecomAuth from '@ecomplus/auth'
+import {
+  // i19average,
+  // i19averageTicket,
+  i19newOrders,
+  i19orders,
+  i19paid,
+  i19total
+} from '@ecomplus/i18n'
 
+import {
+  i18n,
+  formatMoney
+} from '@ecomplus/utils'
+
+import ecomAuth from '@ecomplus/auth'
+import Chart from 'chart.js'
+import 'chartjs-plugin-annotation'
+
+const dayMs = 1000 * 3600 * 24
 const formatDay = day => day.toString().padStart(2, '0')
 
 export default {
   name: 'EcOrdersGraphs',
 
   props: {
+    dateRange: {
+      type: Object,
+      required: true
+    },
     ecomAuth: {
       type: Object,
       default () {
@@ -16,48 +37,227 @@ export default {
 
   data () {
     return {
-      aggregation: []
+      isLoaded: false
     }
   },
 
-  created () {
-    const d = new Date()
-    d.setHours(0, 0, 0, 0)
-    d.setDate(d.getDate() - 30)
-    const $group = {
-      _id: { $cond: [] },
-      count: { $sum: 1 },
-      amount: { $sum: '$amount.total' }
-    }
-    const pipeline = [
-      { $match: { created_at: { $gte: d.toISOString() } } },
-      { $group }
-    ]
-    let { $cond } = $group._id
-    for (let i = 0; i <= 30; i++) {
-      d.setDate(d.getDate() + 1)
-      const id = `${formatDay(d.getDate())}/${formatDay(d.getMonth() + 1)}`
-      if (i < 30) {
-        $cond.push({ $lt: ['$created_at', d.toISOString()] }, id)
-        if (i < 29) {
-          const $nextCond = []
-          $cond.push({ $cond: $nextCond })
-          $cond = $nextCond
+  computed: {
+    i19average: () => 'Média',
+    i19averageTicket: () => 'Ticket médio',
+    i19newOrders: () => i18n(i19newOrders),
+    i19orders: () => i18n(i19orders).toLowerCase(),
+    i19paid: () => i18n(i19paid),
+    i19total: () => i18n(i19total)
+  },
+
+  methods: {
+    setupChart (ordersAggr, labels) {
+      const findData = id => ordersAggr.find(({ _id }) => _id === id)
+      let avgTicket, countOrders, sumAmount
+      avgTicket = countOrders = sumAmount = 0
+      const chartConfig = {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            type: 'line',
+            yAxisID: 'num',
+            label: this.i19newOrders,
+            data: labels.map(id => {
+              const data = findData(id)
+              if (data && data.count) {
+                countOrders += data.count
+                sumAmount += data.amount
+                avgTicket = sumAmount / countOrders
+                return data.count
+              }
+              return 0
+            }),
+            fill: false,
+            borderColor: 'rgba(55, 0, 60, 0.7)',
+            lineTension: 0
+          }, {
+            label: this.i19total,
+            data: labels.map(id => {
+              const data = findData(id)
+              return (data && data.amount) || 0
+            }),
+            backgroundColor: 'rgba(3, 169, 179, 0.45)',
+            hoverBackgroundColor: 'rgba(3, 169, 179, 0.7)'
+          }, {
+            label: this.i19paid,
+            data: labels.map(id => {
+              const data = findData(id)
+              return (data && data.paid) || 0
+            }),
+            backgroundColor: 'rgba(0, 230, 121, 0.45)',
+            hoverBackgroundColor: 'rgba(0, 230, 121, 0.7)'
+          }]
+        },
+        options: {
+          tooltips: {
+            callbacks: {
+              label: ({ yLabel, datasetIndex }) => {
+                if (datasetIndex) {
+                  return formatMoney(yLabel)
+                }
+                return `${yLabel} ${this.i19orders}`
+              }
+            }
+          },
+          scales: {
+            yAxes: [{
+              id: 'money',
+              position: 'left',
+              ticks: {
+                callback (val) {
+                  return formatMoney(val)
+                }
+              }
+            }, {
+              id: 'num',
+              position: 'right',
+              gridLines: {
+                display: false,
+                drawBorder: false
+              }
+            }]
+          }
         }
-      } else {
-        $cond.push(id)
       }
+      if (sumAmount) {
+        chartConfig.options.annotation = {
+          annotations: [{
+            value: sumAmount / labels.length,
+            rgb: '3, 169, 179',
+            label: this.i19average
+          }, {
+            value: avgTicket,
+            rgb: '255, 1, 91',
+            label: this.i19averageTicket
+          }].map(({ value, rgb, label }) => ({
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'money',
+            value,
+            borderColor: `rgba(${rgb}, 0.6)`,
+            borderWidth: 2,
+            label: {
+              enabled: true,
+              content: `${label}: ${formatMoney(value)}`,
+              backgroundColor: `rgba(${rgb}, 0.8)`
+            }
+          }))
+        }
+      }
+      return new Chart(this.$refs.canva, chartConfig)
     }
-    return this.ecomAuth.requestApi('$aggregate', 'post', {
-      resource: 'orders',
-      pipeline
-    })
-      .then(({ data }) => {
-        this.aggregation = data.result
-      })
-      .catch(console.error)
-      .finally(() => {
-        this.$emit('load', this.aggregation)
-      })
+  },
+
+  watch: {
+    dateRange: {
+      handler ({ startDate, endDate }) {
+        this.isLoaded = false
+        const today = new Date()
+        if (!startDate) {
+          startDate = new Date(today.getFullYear(), -23, 1)
+        }
+        const pipeline = [{ $match: { created_at: { $gte: startDate.toISOString() } } }]
+        if (!endDate || endDate.getTime() > today.getTime()) {
+          endDate = today
+          endDate.setHours(23, 59, 59, 999)
+        } else {
+          pipeline.push({ $match: { created_at: { $lte: endDate.toISOString() } } })
+        }
+        const numDays = Math.ceil(((endDate || today).getTime() - startDate.getTime()) / dayMs)
+        const maxTimestamp = endDate.getTime()
+        let getLabel, setNextDate
+        if (numDays >= 365) {
+          startDate.setDate(1)
+          getLabel = d => `${formatDay(d.getMonth() + 1)}/${d.getFullYear()}`
+          setNextDate = d => d.setMonth(d.getMonth() + 1)
+        } else if (numDays > 3) {
+          const getDayLabel = d => `${formatDay(d.getDate())}/${formatDay(d.getMonth() + 1)}`
+          let daysInterval
+          if (numDays <= 31) {
+            daysInterval = 1
+            getLabel = getDayLabel
+          } else {
+            daysInterval = numDays > 120 ? 30 : 7
+            getLabel = d => {
+              const end = new Date(d.getTime())
+              end.setDate(d.getDate() + daysInterval - 1)
+              return end.getTime() < maxTimestamp
+                ? getDayLabel(d) + ' - ' + getDayLabel(end)
+                : getDayLabel(d) + ' - ' + getDayLabel(endDate)
+            }
+          }
+          setNextDate = d => d.setDate(d.getDate() + daysInterval)
+        } else {
+          if (numDays === 1) {
+            getLabel = d => `${formatDay(d.getHours())}h`
+          } else {
+            getLabel = d => `${formatDay(d.getDate())} ${formatDay(d.getHours())}h`
+          }
+          setNextDate = d => d.setHours(d.getHours() + numDays)
+        }
+        const intervals = []
+        while (startDate.getTime() < maxTimestamp) {
+          const label = getLabel(startDate)
+          setNextDate(startDate)
+          if (startDate.getTime() < maxTimestamp) {
+            intervals.push({
+              dateIso: startDate.toISOString(),
+              label
+            })
+          } else {
+            intervals.push({ label })
+          }
+        }
+        if (!intervals.length) {
+          return
+        }
+        if (intervals[intervals.length - 1].dateIso) {
+          intervals.push({
+            label: getLabel(endDate)
+          })
+        }
+        const $group = {
+          _id: { $cond: [] },
+          count: { $sum: 1 },
+          amount: { $sum: '$amount.total' },
+          paid: { $sum: { $cond: [{ $eq: ['$financial_status.current', 'paid'] }, '$amount.total', 0] } }
+        }
+        pipeline.push({ $group })
+        let { $cond } = $group._id
+        const labels = []
+        intervals.forEach(({ dateIso, label }, i) => {
+          labels.push(label)
+          if (i < intervals.length - 1) {
+            $cond.push({ $lt: ['$created_at', dateIso] }, label)
+            if (i < intervals.length - 2) {
+              const $nextCond = []
+              $cond.push({ $cond: $nextCond })
+              $cond = $nextCond
+            }
+          } else {
+            $cond.push(label)
+          }
+        })
+        return this.ecomAuth.requestApi('$aggregate', 'post', {
+          resource: 'orders',
+          pipeline
+        })
+          .then(({ data }) => {
+            this.setupChart(data.result, labels)
+          })
+          .catch(console.error)
+          .finally(() => {
+            this.isLoaded = true
+            this.$emit('load', this.aggregation)
+          })
+      },
+      immediate: true
+    }
   }
 }
