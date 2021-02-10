@@ -1,7 +1,10 @@
 <template>
   <div class="ec-home">
-    <b-overlay :show="isLoading">
-      <div class="card p-30">
+    <fade-transition :duration="{ enter: 600 }">
+      <div
+        v-if="!isLoading"
+        class="card p-30"
+      >
         <div class="row">
           <div class="col">
             <p>
@@ -223,14 +226,40 @@
           </div>
         </div>
       </div>
-    </b-overlay>
+    </fade-transition>
 
-    <slide-y-up-transition>
-      <ec-orders-graphs
-        v-if="hasLoadedAllMetrics"
-        @load="hasLoadedOrdersGraphs = true"
-      />
-    </slide-y-up-transition>
+    <div
+      v-if="isLoading"
+      class="text-center"
+    >
+      <p class="fs-40">
+        <span class="text-light opacity-30">Store ID</span>
+        <strong class="text-purple opacity-70">
+          {{ storeId }}
+        </strong>
+      </p>
+      <div class="mt-4 d-flex justify-content-center">
+        <div
+          class="spinner-border"
+          style="width: 6rem; height: 6rem;"
+          role="status"
+        >
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+      <img
+        alt="E-Com Plus"
+        class="img-fluid mt-5"
+        width="200"
+        src="https://ecom.nyc3.digitaloceanspaces.com/brand/plus/248x54.png"
+      >
+    </div>
+
+    <ec-orders-graphs
+      v-if="hasLoadedAllMetrics"
+      :date-range="fixedDateRange"
+      @load="hasLoadedOrdersGraphs = true"
+    />
 
     <slide-y-up-transition>
       <ec-home-cards

@@ -1,15 +1,17 @@
 import {
   i19attention,
+  i19comparedPreviousPeriodMsg,
   i19domain,
-  // i19editStorefront,
+  i19editStorefront,
   i19goToStore,
-  // i19invalidDomainName,
-  // i19newOrders,
-  // i19noNewOrdersMsg,
+  i19invalidDomainName,
+  i19newOrders,
+  i19noNewOrdersMsg,
   i19paymentConfirmed,
-  i19share
-  // i19pressEnterToSave,
-  // i19setStoreDomain,
+  i19share,
+  i19pressEnterToSave,
+  i19setDomainMsg,
+  i19setStoreDomain
 } from '@ecomplus/i18n'
 
 import {
@@ -18,7 +20,6 @@ import {
 } from '@ecomplus/utils'
 
 import ecomAuth from '@ecomplus/auth'
-import { BOverlay } from 'bootstrap-vue'
 import { FadeTransition, SlideYUpTransition } from 'vue2-transitions'
 import { ShareNetwork } from 'vue-social-sharing'
 import EcDatesPicker from '../EcDatesPicker.vue'
@@ -34,7 +35,6 @@ export default {
   name: 'EcHome',
 
   components: {
-    BOverlay,
     FadeTransition,
     SlideYUpTransition,
     ShareNetwork,
@@ -82,17 +82,17 @@ export default {
 
   computed: {
     i19attention: () => i18n(i19attention),
-    i19comparedPreviousPeriodMsg: () => 'Comparado ao período anterior (mesmo número de dias).',
+    i19comparedPreviousPeriodMsg: () => i18n(i19comparedPreviousPeriodMsg),
     i19domain: () => i18n(i19domain),
-    i19editStorefront: () => 'Editar frente de loja',
+    i19editStorefront: () => i18n(i19editStorefront),
     i19goToStore: () => i18n(i19goToStore),
-    i19invalidDomainName: () => 'Nome de domínio inválido',
-    i19newOrders: () => 'Novos pedidos',
-    i19noNewOrdersMsg: () => 'Sem novos pedidos por enquanto.',
+    i19invalidDomainName: () => i18n(i19invalidDomainName),
+    i19newOrders: () => i18n(i19newOrders),
+    i19noNewOrdersMsg: () => i18n(i19noNewOrdersMsg),
     i19paymentConfirmed: () => i18n(i19paymentConfirmed),
-    i19pressEnterToSave: () => 'Aperte ENTER para salvar',
-    i19setDomainMsg: () => 'Você deve ser o prorietário do domínio e apontá-lo para a loja.',
-    i19setStoreDomain: () => 'Defina o domínio da loja',
+    i19pressEnterToSave: () => i18n(i19pressEnterToSave),
+    i19setDomainMsg: () => i18n(i19setDomainMsg),
+    i19setStoreDomain: () => i18n(i19setStoreDomain),
     i19share: () => i18n(i19share),
 
     shopLink () {
@@ -258,6 +258,7 @@ export default {
         paidAmount: null
       }
       this.isLoadingMetrics = true
+      this.hasLoadedAllMetrics = false
       this.fetchOrderMetrics()
         .then(() => {
           this.fetchOrderMetrics(true).finally(() => {
