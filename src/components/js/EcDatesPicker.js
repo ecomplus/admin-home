@@ -14,7 +14,10 @@ export default {
   name: 'EcDatesPicker',
 
   props: {
-    value: Object
+    value: {
+      type: Object,
+      required: true
+    }
   },
 
   components: {
