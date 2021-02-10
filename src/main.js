@@ -9,6 +9,7 @@ if (!ecomAuth.checkLogin()) {
     ecomAuth.login(username, window.localStorage.getItem('password'))
     $ecomConfig.set('lang', window.localStorage.getItem('lang') || 'pt_br')
     $ecomConfig.set('currency', window.localStorage.getItem('currency') || 'BRL')
+    $ecomConfig.set('currency_symbol', window.localStorage.getItem('currency_symbol') || 'R$')
   }
 }
 
