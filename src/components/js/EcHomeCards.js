@@ -3,6 +3,7 @@ import {
   // i19favor,
   // i19latestOrders,
   i19load
+  // i19topSellingProducts
 } from '@ecomplus/i18n'
 
 import {
@@ -15,6 +16,7 @@ import Vue from 'vue'
 import { SlideYUpTransition } from 'vue2-transitions'
 
 const i19latestOrders = 'Últimos pedidos'
+const i19topSellingProducts = 'Produtos mais vendidos'
 
 export default {
   name: 'EcHomeCards',
@@ -39,6 +41,10 @@ export default {
         id: 'orders_list',
         title: i18n(i19latestOrders),
         load: id => this.renderCard(import('../cards/EcOrdersList.vue'), id)
+      }, {
+        id: 'products_list',
+        title: i18n(i19topSellingProducts),
+        load: id => this.renderCard(import('../cards/EcProductsList.vue'), id)
       }],
       loadingCards: [],
       loadedCards: [],
