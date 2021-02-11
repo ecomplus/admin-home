@@ -241,7 +241,7 @@
       <div class="mt-4 d-flex justify-content-center">
         <div
           class="spinner-border"
-          style="width: 6rem; height: 6rem;"
+          style="width: 7rem; height: 7rem;"
           role="status"
         >
           <span class="sr-only">Loading...</span>
@@ -268,6 +268,18 @@
         :end-date="dateRangeIso.end"
       />
     </slide-y-up-transition>
+
+    <template v-if="!isLoading && !hasLoadedOrdersGraphs">
+      <div v-once>
+        <b-skeleton
+          v-for="i in 3"
+          :key="`skeleton-${i}`"
+          animation="wave"
+          :width="`${(Math.floor(Math.random() * (95 - 35)) + 35)}%`"
+          height="25px"
+        ></b-skeleton>
+      </div>
+    </template>
   </div>
 </template>
 
