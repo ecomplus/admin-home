@@ -1,5 +1,5 @@
 <template>
-  <div
+  <article
     :key="JSON.stringify(dateRange)"
     class="ec-orders-graph m-2"
   >
@@ -23,7 +23,7 @@
       width="400"
       height="160"
     ></canvas>
-  </div>
+  </article>
 </template>
 
 <script src="./js/EcOrdersGraphs.js"></script>
