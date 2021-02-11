@@ -28,15 +28,12 @@
             ></i>
           </th>
 
-          <td
-            class="text-truncate"
-            style="max-width: 30%"
-          >
+          <td>
             <a
               v-if="order.buyers && order.buyers.length"
               :href="`/#/resources/customers/${order.buyers[0]._id}`"
             >
-              {{ getNickname(order.buyers[0]) }}
+              {{ getNickname(order.buyers[0]).substring(0, 14) }}
             </a>
           </td>
           <td>{{ formatMoney(order.amount.total) }}</td>
