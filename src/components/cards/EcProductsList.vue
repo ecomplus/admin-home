@@ -3,6 +3,7 @@
     <table
       id="ec-products-list-table"
       class="table table-striped table-responsive-sm"
+      style="margin-bottom: 0.75rem"
     >
       <thead>
         <tr>
@@ -19,7 +20,10 @@
           :key="item._id"
         >
           <th scope="row">
-            <a :href="`/#/resources/products/${item._id}`">
+            <a
+              :href="`/#/resources/products/${item._id}`"
+              class="lh-1"
+            >
               <small :title="item.name">
                 {{ item.name.substring(0, 20) }}
               </small>

@@ -1,7 +1,8 @@
 <template>
   <article
     :key="JSON.stringify(dateRange)"
-    class="ec-orders-graph m-2"
+    class="ec-orders-graph m-2 mx-xl-auto"
+    style="max-width: 1100px"
   >
     <canvas
       v-show="isLoaded"
