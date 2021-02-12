@@ -1,18 +1,16 @@
 <template>
   <article id="admin-home" class="mb-3">
-    <slide-x-left-transition :duration="{ enter: 400, leave: 0 }">
-      <router-view/>
-    </slide-x-left-transition>
+    <homepage/>
   </article>
 </template>
 
 <script>
-import { SlideXLeftTransition } from 'vue2-transitions'
+import Homepage from './views/Homepage'
 
 export default {
   name: 'AdminHome',
   components: {
-    SlideXLeftTransition
+    Homepage
   }
 }
 </script>
