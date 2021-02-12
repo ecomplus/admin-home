@@ -20,7 +20,7 @@
   "homepage": "https://github.com/ecomplus/admin-home#readme",
   "dependencies": {
     "@ecomplus/admin-helpers": "^1.0.1",
-    "@ecomplus/auth": "^1.0.0-rc.6",
+    "@ecomplus/auth": "^1.0.0",
     "@ecomplus/client": "^2.2.0",
     "@ecomplus/i18n": "^1.20.0",
     "@ecomplus/search-engine": "^2.5.0",
@@ -30,7 +30,6 @@
     "chartjs-plugin-annotation": "^0.5.7",
     "core-js": "^3.8.3",
     "vue": "^2.6.11",
-    "vue-router": "^3.5.1",
     "vue-social-sharing": "^3.0.4",
     "vue2-daterange-picker": "^0.6.3",
     "vue2-transitions": "^0.3.0"
