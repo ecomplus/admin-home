@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.2](https://github.com/ecomplus/admin-home/compare/v0.9.1...v0.9.2) (2021-02-12)
+
+
+### Bug Fixes
+
+* **layout:** minor fixes for xl devices view ([d71db69](https://github.com/ecomplus/admin-home/commit/d71db69d0c573276435af0c7d83a886450359fc6))
+
 ### [0.9.1](https://github.com/ecomplus/admin-home/compare/v0.9.0...v0.9.1) (2021-02-12)
 
 ## 0.9.0 (2021-02-12)
