@@ -249,7 +249,9 @@ export default {
           pipeline
         })
           .then(({ data }) => {
-            this.setupChart(data.result, labels)
+            this.$nextTick(() => {
+              this.setupChart(data.result, labels)
+            })
           })
           .catch(console.error)
           .finally(() => {

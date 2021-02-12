@@ -255,31 +255,33 @@
       >
     </div>
 
-    <ec-orders-graphs
-      v-if="hasLoadedAllMetrics"
-      :date-range="fixedDateRange"
-      @load="hasLoadedOrdersGraphs = true"
-    />
-
     <slide-y-up-transition>
-      <ec-home-cards
-        v-if="hasLoadedOrdersGraphs"
-        :start-date="dateRangeIso.start"
-        :end-date="dateRangeIso.end"
+      <ec-orders-graphs
+        v-if="hasLoadedAllMetrics"
+        :date-range="fixedDateRange"
+        @load="hasLoadedOrdersGraphs = hasLoadedOnce = true"
       />
     </slide-y-up-transition>
 
     <template v-if="!isLoading && !hasLoadedOrdersGraphs">
       <div v-once>
         <b-skeleton
-          v-for="i in 3"
+          v-for="i in 5"
           :key="`skeleton-${i}`"
           animation="wave"
           :width="`${(Math.floor(Math.random() * (95 - 35)) + 35)}%`"
-          height="25px"
+          height="35px"
         ></b-skeleton>
       </div>
     </template>
+
+    <slide-y-up-transition>
+      <ec-home-cards
+        v-if="hasLoadedOnce"
+        :start-date="dateRangeIso.start"
+        :end-date="dateRangeIso.end"
+      />
+    </slide-y-up-transition>
   </div>
 </template>
 

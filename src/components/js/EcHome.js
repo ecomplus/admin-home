@@ -78,7 +78,8 @@ export default {
       },
       isLoadingMetrics: false,
       hasLoadedAllMetrics: false,
-      hasLoadedOrdersGraphs: false
+      hasLoadedOrdersGraphs: false,
+      hasLoadedOnce: false
     }
   },
 
@@ -203,7 +204,7 @@ export default {
     fetchOrderMetrics (isCompare) {
       const dateRangeIso = isCompare ? this.compareDateRangeIso : this.dateRangeIso
       if (!dateRangeIso) {
-        return
+        return Promise.resolve()
       }
       const orderMetrics = isCompare ? this.compareOrderMetrics : this.orderMetrics
       const { start, end } = dateRangeIso
@@ -254,13 +255,13 @@ export default {
       }
     },
 
-    dateRange ({ startDate, endDate }) {
+    dateRange () {
       this.compareOrderMetrics = {
         countCreated: null,
         paidAmount: null
       }
       this.isLoadingMetrics = true
-      this.hasLoadedAllMetrics = false
+      this.hasLoadedOrdersGraphs = this.hasLoadedAllMetrics = false
       this.fetchOrderMetrics()
         .then(() => {
           this.fetchOrderMetrics(true).finally(() => {

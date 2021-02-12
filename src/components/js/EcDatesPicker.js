@@ -132,19 +132,21 @@ export default {
   methods: {
     saveDateRange (dateRange) {
       const { ranges } = this
-      for (const rangeName in ranges) {
-        const range = ranges[rangeName]
-        if (
-          range &&
-          range[0] &&
-          range[0].getTime() === dateRange.startDate.getTime() &&
-          range[1].getTime() === dateRange.endDate.getTime()
-        ) {
-          window.localStorage.setItem(storageKey, rangeName)
-          return
+      if (dateRange.startDate && dateRange.endDate) {
+        for (const rangeName in ranges) {
+          const range = ranges[rangeName]
+          if (
+            range &&
+            range[0] &&
+            range[0].getTime() === dateRange.startDate.getTime() &&
+            range[1].getTime() === dateRange.endDate.getTime()
+          ) {
+            window.localStorage.setItem(storageKey, rangeName)
+            return
+          }
         }
+        window.localStorage.setItem(storageKey, JSON.stringify(dateRange))
       }
-      window.localStorage.setItem(storageKey, JSON.stringify(dateRange))
     }
   },
 
