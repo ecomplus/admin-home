@@ -2,7 +2,8 @@ import {
   // i19disfavor,
   // i19favor,
   // i19latestOrders,
-  i19load
+  i19load,
+  i19paymentMethods
   // i19topSellingProducts
 } from '@ecomplus/i18n'
 
@@ -45,6 +46,10 @@ export default {
         id: 'products_list',
         title: i18n(i19topSellingProducts),
         load: id => this.renderCard(import('../cards/EcProductsList.vue'), id)
+      }, {
+        id: 'payment_methods_chart',
+        title: i18n(i19paymentMethods),
+        load: id => this.renderCard(import('../cards/EcPaymentMethodsChart.vue'), id)
       }],
       loadingCards: [],
       loadedCards: [],
@@ -61,24 +66,30 @@ export default {
   methods: {
     renderCard (importPromise, id) {
       const index = this.loadingCards.push(id) - 1
-      importPromise
-        .then(component => {
-          this.$nextTick(() => {
-            setTimeout(() => {
-              new Vue({
-                render: h => h(component.default, {
-                  on: {
-                    load: () => {
-                      this.loadingCards.splice(index, 1)
-                      this.loadedCards.push(id)
+      return new Promise(resolve => {
+        importPromise
+          .then(component => {
+            this.$nextTick(() => {
+              setTimeout(() => {
+                new Vue({
+                  render: h => h(component.default, {
+                    on: {
+                      load: () => {
+                        this.loadingCards.splice(index, 1)
+                        this.loadedCards.push(id)
+                        resolve()
+                      }
                     }
-                  }
-                })
-              }).$mount(this.$refs[id][0])
-            }, 300)
+                  })
+                }).$mount(this.$refs[id][0])
+              }, 300)
+            })
           })
-        })
-        .catch(console.error)
+          .catch(err => {
+            console.error(err)
+            resolve()
+          })
+      })
     },
 
     switchCard (id) {
@@ -115,13 +126,13 @@ export default {
             card_id: 'orders_list'
           }]
         }
-        this.$nextTick(() => {
-          for (let i = 0; i < this.cards.length && i < 2; i++) {
+        this.$nextTick(async () => {
+          for (let i = 0; i < this.cards.length && i < 4; i++) {
             const availableCard = this.availableCards.find(({ id }) => {
               return this.cards[i].card_id === id
             })
             if (availableCard) {
-              availableCard.load(availableCard.id)
+              await availableCard.load(availableCard.id)
             }
           }
         })
