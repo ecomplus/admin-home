@@ -1,4 +1,5 @@
 import {
+  i19apps,
   i19attention,
   i19comparedPreviousPeriodMsg,
   i19domain,
@@ -10,9 +11,12 @@ import {
   i19paymentConfirmed,
   i19share,
   i19pressEnterToSave,
+  // i19registerProduct,
   i19setDomainMsg,
   i19setStoreDomain
-  // i19totalAmount
+  // i19settings,
+  // i19totalAmount,
+  // i19uploadLogo
 } from '@ecomplus/i18n'
 
 import { i18n, formatMoney } from '@ecomplus/utils'
@@ -82,6 +86,7 @@ export default {
   },
 
   computed: {
+    i19apps: () => i18n(i19apps),
     i19attention: () => i18n(i19attention),
     i19comparedPreviousPeriodMsg: () => i18n(i19comparedPreviousPeriodMsg),
     i19domain: () => i18n(i19domain),
@@ -91,9 +96,12 @@ export default {
     i19newOrders: () => i18n(i19newOrders),
     i19noNewOrdersMsg: () => i18n(i19noNewOrdersMsg),
     i19pressEnterToSave: () => i18n(i19pressEnterToSave),
+    i19registerProduct: () => 'Cadastrar produto',
     i19setDomainMsg: () => i18n(i19setDomainMsg),
     i19setStoreDomain: () => i18n(i19setStoreDomain),
     i19share: () => i18n(i19share),
+    i19settings: () => 'Configurações',
+    i19uploadLogo: () => 'Carregar logo',
 
     isMobile: () => {
       const { userAgent } = navigator
@@ -220,10 +228,15 @@ export default {
       }
     },
 
-    setLogo () {
+    uploadLogo () {
       uploadPictures()
         .then(pictures => {
-
+          if (pictures.length) {
+            const logo = pictures[0].zoom
+            this.updateStore({ logo }).then(() => {
+              this.store.logo = logo
+            })
+          }
         })
         .catch(console.error)
     },

@@ -26,13 +26,23 @@
                 </p>
 
                 <slide-y-up-transition>
-                  <img
-                    v-if="store.logo"
-                    :src="store.logo.url"
-                    alt="Logo"
-                    class="mt-4 mb-3 mb-xl-0 img-fluid"
-                    style="max-height: 60px"
-                  >
+                  <div class="d-flex align-items-center mt-4 mb-3 mb-xl-0">
+                    <img
+                      v-if="store.logo"
+                      :src="store.logo.url"
+                      alt="Logo"
+                      class="img-fluid"
+                      style="max-height: 60px"
+                    >
+                    <a
+                      class="text-secondary ml-3"
+                      href="#"
+                      @click.prevent="uploadLogo"
+                      :title="i19uploadLogo"
+                    >
+                      <i class="ti-pencil"></i>
+                    </a>
+                  </div>
                 </slide-y-up-transition>
               </div>
 
@@ -49,24 +59,27 @@
                         {{ store.financial_email }}
                       </a>
 
-                      <template v-if="store.domain">
+                      <span
+                        v-if="store.domain"
+                        class="d-inline-block"
+                      >
                         ·
                         <a
                           :href="`https://${store.domain}`"
                           target="_blank"
-                          class="d-inline-block fw-500"
+                          class="fw-500"
                         >
                           {{ store.domain }}
                         </a>
                         <a
-                          class="text-secondary ml-2"
+                          class="text-secondary ml-1"
                           href="#"
                           @click.prevent="isEditingDomain = !isEditingDomain"
                           :title="i19setStoreDomain"
                         >
                           <i class="ti-pencil"></i>
                         </a>
-                      </template>
+                      </span>
                     </div>
 
                     <slide-y-up-transition>
@@ -74,17 +87,17 @@
                         <a
                           target="_blank"
                           :href="`https://${store.domain}/admin/`"
-                          class="btn btn-sm btn-primary mr-3 mt-2"
+                          class="btn btn-primary mr-3 mt-2"
                         >
                           <i class="ti-paint-roller"></i>
-                          <span class="ml-1 d-sm-none d-md-inline">
+                          <span class="ml-1 d-none d-md-inline">
                             {{ i19editStorefront }}
                           </span>
                         </a>
                         <a
                           target="_blank"
                           :href="shopLink"
-                          class="btn btn-sm btn-primary mt-2"
+                          class="btn btn-primary mt-2"
                         >
                           <i class="ti-shopping-cart"></i>
                           <span class="ml-1 d-none d-md-inline">
@@ -129,9 +142,33 @@
                 </slide-y-up-transition>
               </div>
             </div>
+
+            <div class="d-none d-lg-block mt-4">
+              <a
+                href="/#/settings"
+                class="btn btn-sm btn-outline-secondary mr-3 mt-2"
+              >
+                <i class="fa fa-cogs mr-1"></i>
+                {{ i19settings }}
+              </a>
+              <a
+                href="/#/resources/products/new"
+                class="d-none d-xl-inline-block btn btn-sm btn-outline-secondary mr-3 mt-2"
+              >
+                <i class="fa fa-tag mr-1"></i>
+                {{ i19registerProduct }}
+              </a>
+              <a
+                href="/#/apps"
+                class="btn btn-sm btn-outline-secondary mt-2"
+              >
+                <i class="fa fa-puzzle-piece mr-1"></i>
+                {{ i19apps }}
+              </a>
+            </div>
           </div>
 
-          <div class="col-sm mt-5 mt-sm-0 text-right">
+          <div class="col-sm col-md-auto col-xl-5 mt-5 mt-sm-0 text-right">
             <div class="mb-3">
               <ec-dates-picker
                 v-if="!isLoading"
@@ -162,7 +199,9 @@
                     {{ ordersMetrics.countCreated }}
                   </strong>
                   <span class="ml-2 text-uppercase lh-1">
-                    {{ i19newOrders }}
+                    <a href="/#/resources/orders">
+                      {{ i19newOrders }}
+                    </a>
                     <template v-if="countOrdersDiff !== null">
                       <br>
                       <span
@@ -206,7 +245,7 @@
                 <div class="row justify-content-end">
                   <div
                     v-for="({ label, value, diffValue, diffPercent }) in amountMetrics"
-                    class="col-md-auto mt-3"
+                    class="col-lg-auto mt-3"
                   >
                     <template v-if="value">
                       <em class="fw-200">
