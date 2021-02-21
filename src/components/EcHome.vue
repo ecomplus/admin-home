@@ -36,7 +36,7 @@
                 </slide-y-up-transition>
               </div>
 
-              <div class="col-xl-7">
+              <div class="col-lg-7">
                 <slide-y-up-transition>
                   <div v-if="store.name">
                     <h1>{{ store.name }}</h1>
@@ -54,12 +54,12 @@
                         <a
                           :href="`https://${store.domain}`"
                           target="_blank"
-                          class="fw-500"
+                          class="d-inline-block fw-500"
                         >
                           {{ store.domain }}
                         </a>
                         <a
-                          class="text-secondary"
+                          class="text-secondary ml-2"
                           href="#"
                           @click.prevent="isEditingDomain = !isEditingDomain"
                           :title="i19setStoreDomain"
@@ -77,7 +77,7 @@
                           class="btn btn-sm btn-primary mr-3 mt-2"
                         >
                           <i class="ti-paint-roller"></i>
-                          <span class="ml-1 d-none d-md-inline">
+                          <span class="ml-1 d-sm-none d-md-inline">
                             {{ i19editStorefront }}
                           </span>
                         </a>
@@ -131,7 +131,7 @@
             </div>
           </div>
 
-          <div class="col-md-5 mt-3 mt-md-0 text-right">
+          <div class="col-sm mt-5 mt-sm-0 text-right">
             <div class="mb-3">
               <ec-dates-picker
                 v-if="!isLoading"
@@ -153,85 +153,85 @@
             </div>
 
             <fade-transition>
-              <div
-                v-if="!isLoading && !isLoadingMetrics"
-                class="row"
-              >
-                <div class="col">
-                  <div
-                    v-if="orderMetrics.countCreated"
-                    class="d-flex align-items-center justify-content-end"
-                  >
-                    <strong class="fs-40 text-purple">
-                      {{ orderMetrics.countCreated }}
-                    </strong>
-                    <span class="ml-2 text-uppercase lh-1">
-                      {{ i19newOrders }}
-                      <template v-if="countOrdersDiff !== null">
-                        <br>
-                        <span
-                          class="fs-15"
-                          :class="countOrdersDiff > 0 ? 'text-success' : 'text-danger'"
-                          v-b-tooltip.hover.bottomleft="i19comparedPreviousPeriodMsg"
-                        >
-                          <i
-                            class="fa"
-                            :class="`fa-arrow-circle-${(countOrdersDiff > 0 ? 'up' : 'down')}`"
-                          ></i>
-                          {{ (countOrdersDiff > 0 ? '+' : '') + countOrdersDiff }}
-                          <strong v-if="countOrdersDiffPercent">
-                            {{ countOrdersDiffPercent }}
-                          </strong>
-                        </span>
-                      </template>
-                    </span>
-                  </div>
-                  <span v-else>
-                    {{ i19noNewOrdersMsg }}
+              <div v-if="!isLoading && !isLoadingMetrics">
+                <div
+                  v-if="ordersMetrics.countCreated"
+                  class="d-flex align-items-center justify-content-end"
+                >
+                  <strong class="fs-40 text-purple">
+                    {{ ordersMetrics.countCreated }}
+                  </strong>
+                  <span class="ml-2 text-uppercase lh-1">
+                    {{ i19newOrders }}
+                    <template v-if="countOrdersDiff !== null">
+                      <br>
+                      <span
+                        class="fs-15"
+                        :class="countOrdersDiff > 0 ? 'text-success' : 'text-danger'"
+                        v-b-tooltip.hover.bottomleft="i19comparedPreviousPeriodMsg"
+                      >
+                        <i
+                          class="fa"
+                          :class="`fa-arrow-circle-${(countOrdersDiff > 0 ? 'up' : 'down')}`"
+                        ></i>
+                        {{ (countOrdersDiff > 0 ? '+' : '') + countOrdersDiff }}
+                        <strong v-if="countOrdersDiffPercent">
+                          {{ countOrdersDiffPercent }}
+                        </strong>
+                      </span>
+                    </template>
                   </span>
+                </div>
+                <span v-else>
+                  {{ i19noNewOrdersMsg }}
+                </span>
 
-                  <div
-                    v-if="orderMetrics.countCreated"
-                    class="gap-items fs-18 pt-2"
+                <div
+                  v-if="ordersMetrics.countCreated"
+                  class="gap-items fs-18 pt-2"
+                >
+                  <ShareNetwork
+                    v-for="network in ['whatsapp', 'telegram', 'facebook', 'twitter']"
+                    :key="network"
+                    :network="network"
+                    :class="`text-${network}`"
+                    :url="shopLink"
+                    :title="`Nossa loja ${store.name} fez ${ordersMetrics.countCreated} novos pedidos 🚀 !`"
+                    hashtags="vendermais,ecomplus"
                   >
-                    <ShareNetwork
-                      v-for="network in ['whatsapp', 'telegram', 'facebook', 'twitter']"
-                      :key="network"
-                      :network="network"
-                      :class="`text-${network}`"
-                      :url="shopLink"
-                      :title="`Nossa loja ${store.name} fez ${orderMetrics.countCreated} novos pedidos 🚀 !`"
-                      hashtags="vendermais,ecomplus"
-                    >
-                      <i :class="`fa fa-${network}`"></i>
-                    </ShareNetwork>
-                  </div>
+                    <i :class="`fa fa-${network}`"></i>
+                  </ShareNetwork>
                 </div>
 
-                <div class="col-xl mt-3 mt-xl-0">
-                  <template v-if="orderMetrics.paidAmount">
-                    <em class="fw-200">
-                      {{ i19paymentConfirmed }}
-                    </em>
-                    <div class="fs-30 lh-1">
-                      {{ formatMoney(orderMetrics.paidAmount) }}
-                    </div>
-                    <span
-                      v-if="paidAmountDiff !== null"
-                      class="fs-14"
-                      :class="paidAmountDiff > 0 ? 'text-success' : 'text-danger'"
-                      v-b-tooltip.hover.bottomleft="i19comparedPreviousPeriodMsg"
-                    >
-                      <i
-                        class="fa"
-                        :class="`fa-arrow-circle-${(paidAmountDiff > 0 ? 'up' : 'down')}`"
-                      ></i>
-                      {{ (paidAmountDiff > 0 ? '+' : '') + formatMoney(paidAmountDiff) }}
-                      <strong v-if="paidAmountDiffPercent">
-                        {{ paidAmountDiffPercent }}
-                      </strong>
-                    </span>
-                  </template>
+                <div class="row justify-content-end">
+                  <div
+                    v-for="({ label, value, diffValue, diffPercent }) in amountMetrics"
+                    class="col-md-auto mt-3"
+                  >
+                    <template v-if="value">
+                      <em class="fw-200">
+                        {{ label }}
+                      </em>
+                      <div class="fs-30 lh-1">
+                        {{ formatMoney(value) }}
+                      </div>
+                      <span
+                        v-if="diffValue !== null"
+                        class="fs-14"
+                        :class="diffValue > 0 ? 'text-success' : 'text-danger'"
+                        v-b-tooltip.hover.bottomleft="i19comparedPreviousPeriodMsg"
+                      >
+                        <i
+                          class="fa"
+                          :class="`fa-arrow-circle-${(diffValue > 0 ? 'up' : 'down')}`"
+                        ></i>
+                        {{ (diffValue > 0 ? '+' : '') + formatMoney(diffValue) }}
+                        <strong v-if="diffPercent">
+                          {{ diffPercent }}
+                        </strong>
+                      </span>
+                    </template>
+                  </div>
                 </div>
               </div>
             </fade-transition>
@@ -267,24 +267,26 @@
       >
     </div>
 
-    <slide-y-up-transition>
-      <ec-orders-graphs
-        v-if="hasLoadedAllMetrics"
-        :date-range="fixedDateRange"
-        @load="hasLoadedOrdersGraphs = hasLoadedOnce = true"
-      />
-    </slide-y-up-transition>
+    <template v-if="!isMobile">
+      <slide-y-up-transition>
+        <ec-orders-graphs
+          v-if="hasLoadedAllMetrics && ordersMetrics.countCreated"
+          :date-range="fixedDateRange"
+          @load="hasLoadedOrdersGraphs = hasLoadedOnce = true"
+        />
+      </slide-y-up-transition>
 
-    <template v-if="!isLoading && !hasLoadedOrdersGraphs">
-      <div v-once>
-        <b-skeleton
-          v-for="i in 5"
-          :key="`skeleton-${i}`"
-          animation="wave"
-          :width="`${(Math.floor(Math.random() * (95 - 35)) + 35)}%`"
-          height="35px"
-        ></b-skeleton>
-      </div>
+      <template v-if="!isLoading && !hasLoadedOrdersGraphs">
+        <div v-once>
+          <b-skeleton
+            v-for="i in 5"
+            :key="`skeleton-${i}`"
+            animation="wave"
+            :width="`${(Math.floor(Math.random() * (95 - 35)) + 35)}%`"
+            height="35px"
+          ></b-skeleton>
+        </div>
+      </template>
     </template>
 
     <slide-y-up-transition>

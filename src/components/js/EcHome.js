@@ -12,20 +12,20 @@ import {
   i19pressEnterToSave,
   i19setDomainMsg,
   i19setStoreDomain
+  // i19totalAmount
 } from '@ecomplus/i18n'
 
-import {
-  i18n,
-  formatMoney
-} from '@ecomplus/utils'
-
+import { i18n, formatMoney } from '@ecomplus/utils'
 import ecomAuth from '@ecomplus/auth'
+import { toast, handleApiError, uploadPictures } from '@ecomplus/admin-helpers'
 import { BSkeleton } from 'bootstrap-vue'
 import { FadeTransition, SlideYUpTransition } from 'vue2-transitions'
 import { ShareNetwork } from 'vue-social-sharing'
 import EcDatesPicker from '../EcDatesPicker.vue'
 import EcOrdersGraphs from '../EcOrdersGraphs.vue'
 import EcHomeCards from '../EcHomeCards.vue'
+
+const i19totalAmount = 'Montante total'
 
 const formatDiffPercent = (diffVal, compareVal) => {
   return compareVal &&
@@ -68,14 +68,12 @@ export default {
       localDomain: '',
       isEditingDomain: false,
       dateRange: {},
-      orderMetrics: {
+      ordersMetrics: {
         countCreated: 0,
+        totalAmount: 0,
         paidAmount: 0
       },
-      compareOrderMetrics: {
-        countCreated: null,
-        paidAmount: null
-      },
+      compareOrdersMetrics: {},
       isLoadingMetrics: false,
       hasLoadedAllMetrics: false,
       hasLoadedOrdersGraphs: false,
@@ -92,11 +90,16 @@ export default {
     i19invalidDomainName: () => i18n(i19invalidDomainName),
     i19newOrders: () => i18n(i19newOrders),
     i19noNewOrdersMsg: () => i18n(i19noNewOrdersMsg),
-    i19paymentConfirmed: () => i18n(i19paymentConfirmed),
     i19pressEnterToSave: () => i18n(i19pressEnterToSave),
     i19setDomainMsg: () => i18n(i19setDomainMsg),
     i19setStoreDomain: () => i18n(i19setStoreDomain),
     i19share: () => i18n(i19share),
+
+    isMobile: () => {
+      const { userAgent } = navigator
+      return (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) ||
+        /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
+    },
 
     shopLink () {
       return this.store.homepage || `https://${this.store.domain}/`
@@ -154,28 +157,46 @@ export default {
       }
     },
 
-    countOrdersDiff () {
-      const { countCreated } = this.compareOrderMetrics
-      if (countCreated !== null) {
-        return this.orderMetrics.countCreated - countCreated
+    ordersMetricsDiff () {
+      const diffs = {}
+      for (const field in this.ordersMetrics) {
+        const currentVal = this.ordersMetrics[field]
+        if (typeof currentVal === 'number') {
+          const compareVal = this.compareOrdersMetrics[field]
+          if (typeof compareVal === 'number') {
+            diffs[field] = currentVal - compareVal
+            continue
+          }
+        }
+        diffs[field] = null
       }
-      return null
+      return diffs
+    },
+
+    countOrdersDiff () {
+      return this.ordersMetricsDiff.countCreated
     },
 
     countOrdersDiffPercent () {
-      return formatDiffPercent(this.countOrdersDiff, this.compareOrderMetrics.countCreated)
+      return formatDiffPercent(this.countOrdersDiff, this.compareOrdersMetrics.countCreated)
     },
 
-    paidAmountDiff () {
-      const { paidAmount } = this.compareOrderMetrics
-      if (paidAmount !== null) {
-        return this.orderMetrics.paidAmount - paidAmount
-      }
-      return null
-    },
-
-    paidAmountDiffPercent () {
-      return formatDiffPercent(this.paidAmountDiff, this.compareOrderMetrics.paidAmount)
+    amountMetrics () {
+      return [{
+        field: 'totalAmount',
+        label: i18n(i19totalAmount)
+      }, {
+        field: 'paidAmount',
+        label: i18n(i19paymentConfirmed)
+      }].map(({ field, label }) => {
+        const diffValue = this.ordersMetricsDiff[field]
+        return {
+          label,
+          value: this.ordersMetrics[field],
+          diffValue,
+          diffPercent: formatDiffPercent(diffValue, this.compareOrdersMetrics[field])
+        }
+      })
     }
   },
 
@@ -184,6 +205,7 @@ export default {
 
     updateStore (data) {
       return this.ecomAuth.requestApi('stores/me', 'patch', data || this.store)
+        .catch(handleApiError)
     },
 
     setDomain () {
@@ -194,11 +216,16 @@ export default {
           domain: this.localDomain
         })
       } else {
-        this.$bvToast.toast(this.i19invalidDomainName, {
-          variant: 'warning',
-          title: this.i19attention
-        })
+        toast(this.i19invalidDomainName)
       }
+    },
+
+    setLogo () {
+      uploadPictures()
+        .then(pictures => {
+
+        })
+        .catch(console.error)
     },
 
     fetchOrderMetrics (isCompare) {
@@ -206,42 +233,40 @@ export default {
       if (!dateRangeIso) {
         return Promise.resolve()
       }
-      const orderMetrics = isCompare ? this.compareOrderMetrics : this.orderMetrics
+      const ordersMetrics = isCompare ? this.compareOrdersMetrics : this.ordersMetrics
       const { start, end } = dateRangeIso
-      return this.ecomAuth.requestApi('$count', 'post', {
-        resource: 'orders'
-      }, {
-        params: {
-          'created_at>': start,
-          'created_at<': end
+      const pipeline = []
+      if (start) {
+        pipeline.push({
+          $match: { created_at: { $gte: start } }
+        })
+      }
+      if (end) {
+        pipeline.push({
+          $match: { created_at: { $lte: end } }
+        })
+      }
+      pipeline.push(
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 },
+            amount: { $sum: '$amount.total' },
+            paid: { $sum: { $cond: [{ $eq: ['$financial_status.current', 'paid'] }, '$amount.total', 0] } }
+          }
         }
+      )
+      return this.ecomAuth.requestApi('$aggregate', 'post', {
+        resource: 'orders',
+        pipeline
       })
         .then(({ data }) => {
-          orderMetrics.countCreated = data.count
-          const pipeline = []
-          if (start) {
-            pipeline.push({
-              $match: { 'financial_status.updated_at': { $gte: start } }
-            })
-          }
-          if (end) {
-            pipeline.push({
-              $match: { 'financial_status.updated_at': { $lte: end } }
-            })
-          }
-          pipeline.push(
-            { $match: { 'financial_status.current': 'paid' } },
-            { $group: { _id: null, total: { $sum: '$amount.total' } } }
-          )
-          return this.ecomAuth.requestApi('$aggregate', 'post', {
-            resource: 'orders',
-            pipeline
-          })
+          const group = data.result[0] || {}
+          ordersMetrics.countCreated = group.count || 0
+          ordersMetrics.totalAmount = group.amount || 0
+          ordersMetrics.paidAmount = group.paid || 0
         })
-        .then(({ data }) => {
-          orderMetrics.paidAmount = (data.result[0] && data.result[0].total) || 0
-        })
-        .catch(console.error)
+        .catch(handleApiError)
     }
   },
 
@@ -256,8 +281,9 @@ export default {
     },
 
     dateRange () {
-      this.compareOrderMetrics = {
+      this.compareOrdersMetrics = {
         countCreated: null,
+        totalAmount: null,
         paidAmount: null
       }
       this.isLoadingMetrics = true
@@ -266,6 +292,9 @@ export default {
         .then(() => {
           this.fetchOrderMetrics(true).finally(() => {
             this.hasLoadedAllMetrics = true
+            if (this.isMobile) {
+              this.hasLoadedOnce = true
+            }
           })
         })
         .finally(() => {
