@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.3](https://github.com/ecomplus/admin-home/compare/v0.9.2...v0.9.3) (2021-02-21)
+
+
+### Features
+
+* **ec-home:** add useful links on head free space ([7f927bb](https://github.com/ecomplus/admin-home/commit/7f927bb76578129c81b305263b1f9853f06d0e8e))
+* **ec-home:** showing both paid and total period amount ([beaae40](https://github.com/ecomplus/admin-home/commit/beaae40dbc35f943ee5b5a7b6e8f7dfd9d5d2dfb))
+
+
+### Bug Fixes
+
+* **deps:** update @ecomplus/admin-helpers to v1.2.4 ([6dcb782](https://github.com/ecomplus/admin-home/commit/6dcb782afe08bffbef486b3493362abf87d88f23))
+
 ### [0.9.2](https://github.com/ecomplus/admin-home/compare/v0.9.1...v0.9.2) (2021-02-12)
 
 
