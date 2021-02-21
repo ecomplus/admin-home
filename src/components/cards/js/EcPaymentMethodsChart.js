@@ -41,7 +41,7 @@ export default {
       }, {
         _id: 'banking_billet',
         amount: 0,
-        color: '#20c997'
+        color: '#03a9b3'
       }, {
         _id: 'online_debit',
         amount: 0,
