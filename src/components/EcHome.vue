@@ -35,6 +35,10 @@
                         class="img-fluid"
                         style="max-height: 60px"
                       >
+                      <i
+                        v-else
+                        class="fa fa-picture-o fs-50 ml-4 opacity-50"
+                      ></i>
                       <a
                         class="text-secondary ml-3"
                         href="#"
