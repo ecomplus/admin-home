@@ -7,6 +7,7 @@ import {
 
 import ecomAuth from '@ecomplus/auth'
 import Chart from 'chart.js'
+import getAmountTick from '../../../lib/charts/get-amount-tick'
 
 const i19PaymentMethodCodes = {
   credit_card: 'Cartão de crédito',
@@ -98,13 +99,7 @@ export default {
             }],
             yAxes: [{
               ticks: {
-                callback (val) {
-                  val /= 1000
-                  if (!val) {
-                    return 0
-                  }
-                  return `${(val >= 10 ? parseInt(val, 10) : val.toFixed(2).replace('.', ','))}k`
-                }
+                callback: getAmountTick
               }
             }]
           }

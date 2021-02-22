@@ -17,6 +17,7 @@ import {
 import ecomAuth from '@ecomplus/auth'
 import Chart from 'chart.js'
 import 'chartjs-plugin-annotation'
+import getAmountTick from '../../lib/charts/get-amount-tick'
 
 const dayMs = 1000 * 3600 * 24
 const formatDay = day => day.toString().padStart(2, '0')
@@ -120,18 +121,19 @@ export default {
           scales: {
             yAxes: [{
               id: 'money',
-              position: 'left',
+              position: 'right',
               ticks: {
-                callback (val) {
-                  return formatMoney(val)
-                }
+                callback: getAmountTick
               }
             }, {
               id: 'num',
-              position: 'right',
+              position: 'left',
               gridLines: {
                 display: false,
                 drawBorder: false
+              },
+              ticks: {
+                display: false
               }
             }]
           }
