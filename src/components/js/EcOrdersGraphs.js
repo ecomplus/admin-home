@@ -106,6 +106,8 @@ export default {
         },
         options: {
           tooltips: {
+            mode: 'index',
+            intersect: false,
             callbacks: {
               label: ({ yLabel, datasetIndex }) => {
                 if (datasetIndex) {
