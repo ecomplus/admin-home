@@ -73,33 +73,53 @@ export default {
         totalAmount += amount
       })
       ;[
-        ['canva-small', aggByCode],
-        ['canva-big', aggregation]
+        ['canva-pie', aggByCode],
+        ['canva-bar', aggregation]
       ].forEach(([ref, aggregation], i) => {
+        const options = {
+          tooltips: {
+            callbacks: {
+              label: ({ index }) => {
+                const { amount } = aggregation[index]
+                return `${formatMoney(amount)} (${(amount * 100 / totalAmount).toFixed(2)}%)`
+              }
+            }
+          }
+        }
+        if (i > 0) {
+          options.tooltips.mode = 'index'
+          options.tooltips.intersect = false
+          options.legend = false
+          options.scales = {
+            xAxes: [{
+              ticks: {
+                display: false
+              }
+            }],
+            yAxes: [{
+              ticks: {
+                callback (val) {
+                  val /= 1000
+                  if (!val) {
+                    return 0
+                  }
+                  return `${(val >= 10 ? parseInt(val, 10) : val.toFixed(2).replace('.', ','))}k`
+                }
+              }
+            }]
+          }
+        }
+        aggregation = aggregation.sort((a, b) => a.color > b.color ? 1 : -1)
         return new Chart(this.$refs[ref], {
-          type: i ? 'doughnut' : 'pie',
+          type: i ? 'bar' : 'pie',
           data: {
-            labels: aggregation.map(({ _id }) => _id),
+            labels: aggregation.map(({ _id }) => i ? _id : i19PaymentMethodCodes[_id]),
             datasets: [{
               data: aggregation.map(({ amount }) => amount),
               backgroundColor: aggregation.map(({ color }) => color)
             }]
           },
-          options: {
-            legend: false,
-            tooltips: {
-              callbacks: {
-                label: ({ index }) => {
-                  const { _id } = aggregation[index]
-                  return i ? _id : i19PaymentMethodCodes[_id]
-                },
-                afterLabel: ({ index }) => {
-                  const { amount } = aggregation[index]
-                  return `${formatMoney(amount)} (${(amount * 100 / totalAmount).toFixed(2)}%)`
-                }
-              }
-            }
-          }
+          options
         })
       })
     }
@@ -112,7 +132,7 @@ export default {
         { $match: { 'financial_status.current': 'paid' } },
         {
           $group: {
-            _id: '$payment_method_label',
+            _id: '$transactions.payment_method.name',
             amount: { $sum: '$amount.total' },
             codes: { $last: '$transactions.payment_method.code' }
           }
