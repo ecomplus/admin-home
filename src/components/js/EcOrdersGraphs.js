@@ -1,7 +1,9 @@
 import {
   // i19average,
   // i19averageTicket,
+  i19cancelled,
   i19newOrders,
+  i19open,
   i19orders,
   i19paid,
   i19total
@@ -44,7 +46,9 @@ export default {
   computed: {
     i19average: () => 'Média',
     i19averageTicket: () => 'Ticket médio',
+    i19cancelled: () => i18n(i19cancelled),
     i19newOrders: () => i18n(i19newOrders),
+    i19open: () => i18n(i19open),
     i19orders: () => i18n(i19orders).toLowerCase(),
     i19paid: () => i18n(i19paid),
     i19total: () => i18n(i19total)
@@ -53,8 +57,8 @@ export default {
   methods: {
     setupChart (ordersAggr, labels) {
       const findData = id => ordersAggr.find(({ _id }) => _id === id)
-      let avgTicket, countOrders, sumAmount
-      avgTicket = countOrders = sumAmount = 0
+      let avgTicket, countOrders, totalAmount, paidAmount, canceledAmount
+      avgTicket = countOrders = totalAmount = paidAmount = canceledAmount = 0
       const chartConfig = {
         type: 'bar',
         data: {
@@ -67,8 +71,14 @@ export default {
               const data = findData(id)
               if (data && data.count) {
                 countOrders += data.count
-                sumAmount += data.amount
-                avgTicket = sumAmount / countOrders
+                totalAmount += data.amount
+                if (data.paid) {
+                  paidAmount += data.paid
+                }
+                if (data.canceled) {
+                  canceledAmount += data.canceled
+                }
+                avgTicket = totalAmount / countOrders
                 return data.count
               }
               return 0
@@ -125,10 +135,10 @@ export default {
           }
         }
       }
-      if (sumAmount) {
+      if (totalAmount) {
         chartConfig.options.annotation = {
           annotations: [{
-            value: sumAmount / labels.length,
+            value: totalAmount / labels.length,
             rgb: '3, 169, 179',
             label: this.i19average
           }, {
@@ -149,8 +159,42 @@ export default {
             }
           }))
         }
+        setTimeout(() => this.setupPieChart(totalAmount, paidAmount, canceledAmount), 200)
       }
       return new Chart(this.$refs.canva, chartConfig)
+    },
+
+    setupPieChart (totalAmount, paidAmount, canceledAmount) {
+      const data = [
+        totalAmount - paidAmount - canceledAmount,
+        paidAmount,
+        canceledAmount
+      ]
+      const percents = data.map(amount => `${(amount * 100 / totalAmount).toFixed(2)}%`)
+      return new Chart(this.$refs['canva-pie'], {
+        type: 'pie',
+        data: {
+          labels: [
+            `${this.i19open}: ${percents[0]}`,
+            `${this.i19paid}: ${percents[1]}`,
+            `${this.i19cancelled}: ${percents[2]}`
+          ],
+          datasets: [{
+            data,
+            backgroundColor: ['#b9b8bc', '#00e679', '#fe0002']
+          }]
+        },
+        options: {
+          tooltips: {
+            callbacks: {
+              label: ({ index }) => {
+                const amount = data[index]
+                return `${formatMoney(amount)} (${percents[index]})`
+              }
+            }
+          }
+        }
+      })
     }
   },
 
@@ -226,7 +270,18 @@ export default {
           _id: { $cond: [] },
           count: { $sum: 1 },
           amount: { $sum: '$amount.total' },
-          paid: { $sum: { $cond: [{ $eq: ['$financial_status.current', 'paid'] }, '$amount.total', 0] } }
+          paid: {
+            $sum: {
+              $cond: [{ $eq: ['$financial_status.current', 'paid'] }, '$amount.total', 0]
+            }
+          },
+          canceled: {
+            $sum: {
+              $cond: [{
+                $in: ['$financial_status.current', ['voided', 'unauthorized', 'in_dispute', 'refunded']]
+              }, '$amount.total', 0]
+            }
+          }
         }
         pipeline.push({ $group })
         let { $cond } = $group._id
