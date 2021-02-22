@@ -305,7 +305,7 @@ export default {
         .then(() => {
           this.fetchOrderMetrics(true).finally(() => {
             this.hasLoadedAllMetrics = true
-            if (this.isMobile) {
+            if (this.isMobile || !this.ordersMetrics.countCreated) {
               this.hasLoadedOnce = true
             }
           })
