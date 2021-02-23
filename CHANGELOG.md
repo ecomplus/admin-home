@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.4](https://github.com/ecomplus/admin-home/compare/v0.9.3...v0.9.4) (2021-02-23)
+
+
+### Features
+
+* **ec-buyers-profile-chart:** setup new buyers profile graphs card ([68e2445](https://github.com/ecomplus/admin-home/commit/68e244508e66d6ab768f10595519ecdac3f6da9f))
+* **ec-orders-graphs:** add pie chart with orders pass rate ([1983ef2](https://github.com/ecomplus/admin-home/commit/1983ef27c42959ba2572848502bdeb43d536b72b))
+
+
+### Bug Fixes
+
+* **ec-home:** load home cards when no period orders count (skip graphs) ([098da22](https://github.com/ecomplus/admin-home/commit/098da223187a528e6e8b94e9d2fcd0dc49b14232))
+* **ec-home:** show picture icon when no logo set ([1e84cc9](https://github.com/ecomplus/admin-home/commit/1e84cc95b225965cd65ab27913695be1dea62a59))
+* **ec-payment-methods-chart:** group by payemnt method name, legend first chart ([23f624e](https://github.com/ecomplus/admin-home/commit/23f624e5f98acefdad92a325aed989688752ee47))
+
 ### [0.9.3](https://github.com/ecomplus/admin-home/compare/v0.9.2...v0.9.3) (2021-02-21)
 
 

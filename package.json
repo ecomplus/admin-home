@@ -1,7 +1,7 @@
 {
   "name": "@ecomplus/admin-home",
   "description": "E-Com Plus dashboard homepage with Vue 2 SPA",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "module": "src/index.js",
   "scripts": {
     "serve": "vue-cli-service serve",
