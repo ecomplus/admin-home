@@ -103,6 +103,11 @@ export default {
               }
             }]
           }
+        } else {
+          options.tooltips.callbacks.beforeLabel = ({ index }) => {
+            const { _id } = aggregation[index]
+            return i19PaymentMethodCodes[_id]
+          }
         }
         aggregation = aggregation.sort((a, b) => a.color > b.color ? 1 : -1)
         return new Chart(this.$refs[ref], {
