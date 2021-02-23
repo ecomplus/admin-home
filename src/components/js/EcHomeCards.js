@@ -1,4 +1,5 @@
 import {
+  // i19buyersProfile,
   // i19disfavor,
   // i19favor,
   // i19latestOrders,
@@ -16,6 +17,7 @@ import ecomAuth from '@ecomplus/auth'
 import Vue from 'vue'
 import { SlideYUpTransition } from 'vue2-transitions'
 
+const i19buyersProfile = 'Perfil dos compradores'
 const i19latestOrders = 'Últimos pedidos'
 const i19topSellingProducts = 'Produtos mais vendidos'
 
@@ -50,6 +52,10 @@ export default {
         id: 'payment_methods_chart',
         title: i18n(i19paymentMethods),
         load: id => this.renderCard(import('../cards/EcPaymentMethodsChart.vue'), id)
+      }, {
+        id: 'buyers_profile_chart',
+        title: i18n(i19buyersProfile),
+        load: id => this.renderCard(import('../cards/EcBuyersProfileChart.vue'), id)
       }],
       loadingCards: [],
       loadedCards: [],
