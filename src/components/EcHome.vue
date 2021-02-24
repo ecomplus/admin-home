@@ -5,7 +5,10 @@
         v-if="!isLoading"
         class="card p-30"
       >
-        <div class="row">
+        <div
+          class="row"
+          style="min-height: 226px"
+        >
           <div class="col">
             <div class="d-flex flex-column justify-content-between h-100">
               <div class="row align-items-center">
@@ -208,10 +211,10 @@
                     <a href="/#/resources/orders">
                       {{ i19newOrders }}
                     </a>
-                    <template v-if="countOrdersDiff !== null">
-                      <br>
+                    <br>
+                    <span class="fs-15">
                       <span
-                        class="fs-15"
+                        v-if="countOrdersDiff !== null"
                         :class="countOrdersDiff > 0 ? 'text-success' : 'text-danger'"
                         v-b-tooltip.hover.bottomleft="i19comparedPreviousPeriodMsg"
                       >
@@ -224,7 +227,8 @@
                           {{ countOrdersDiffPercent }}
                         </strong>
                       </span>
-                    </template>
+                      <template v-else>...</template>
+                    </span>
                   </span>
                 </div>
                 <span v-else>
