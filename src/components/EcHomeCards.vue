@@ -1,5 +1,5 @@
 <template>
-  <div class="ec-home-cards my-5">
+  <div class="ec-home-cards mt-30">
     <div class="row">
       <div
         v-for="({ id, title, load }) in availableCards"
