@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0-rc.0](https://github.com/ecomplus/admin-home/compare/v0.9.4...v1.1.0-rc.0) (2021-02-24)
+
+
+### Features
+
+* **ec-onboarding:** setup onboarding card with timeline and video ([#5](https://github.com/ecomplus/admin-home/issues/5)) ([19bc331](https://github.com/ecomplus/admin-home/commit/19bc3316ec676908c71236e7b05541f6b1ea1626))
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies to ^2.6.12 ([#3](https://github.com/ecomplus/admin-home/issues/3)) ([185ec33](https://github.com/ecomplus/admin-home/commit/185ec3337fe5606d28c830b5c6cc4e94573eda5a))
+* **ec-buyers-profile:** handling buyers with gender not configured (optional) ([3113fa9](https://github.com/ecomplus/admin-home/commit/3113fa9746694707e624807533e180c1045fdc73))
+
 ### [0.9.4](https://github.com/ecomplus/admin-home/compare/v0.9.3...v0.9.4) (2021-02-23)
 
 
