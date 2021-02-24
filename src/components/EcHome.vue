@@ -254,7 +254,9 @@
 
                 <div class="row justify-content-end">
                   <div
-                    v-for="({ label, value, diffValue, diffPercent }) in amountMetrics"
+                    v-for="({ label, value, diffValue, diffPercent }, i) in amountMetrics"
+                    :key="`amount-${i}`"
+                    v-if="value"
                     class="col-lg-auto mt-3"
                   >
                     <template v-if="value">
@@ -316,35 +318,54 @@
       >
     </div>
 
-    <template v-if="!isMobile && ordersMetrics.countCreated">
+    <template v-if="!hasNoOrders">
+      <template v-if="!isMobile && ordersMetrics.countCreated">
+        <slide-y-up-transition>
+          <ec-orders-graphs
+            v-if="hasLoadedAllMetrics"
+            :date-range="fixedDateRange"
+            @load="hasLoadedOrdersGraphs = hasLoadedOnce = true"
+          />
+        </slide-y-up-transition>
+
+        <template v-if="!isLoading && !hasLoadedOrdersGraphs">
+          <div v-once>
+            <b-skeleton
+              v-for="i in 5"
+              :key="`skeleton-${i}`"
+              animation="wave"
+              :width="`${(Math.floor(Math.random() * (95 - 35)) + 35)}%`"
+              height="35px"
+            ></b-skeleton>
+          </div>
+        </template>
+      </template>
+
       <slide-y-up-transition>
-        <ec-orders-graphs
-          v-if="hasLoadedAllMetrics"
-          :date-range="fixedDateRange"
-          @load="hasLoadedOrdersGraphs = hasLoadedOnce = true"
+        <ec-home-cards
+          v-if="hasLoadedOnce"
+          :start-date="dateRangeIso.start"
+          :end-date="dateRangeIso.end"
         />
       </slide-y-up-transition>
-
-      <template v-if="!isLoading && !hasLoadedOrdersGraphs">
-        <div v-once>
-          <b-skeleton
-            v-for="i in 5"
-            :key="`skeleton-${i}`"
-            animation="wave"
-            :width="`${(Math.floor(Math.random() * (95 - 35)) + 35)}%`"
-            height="35px"
-          ></b-skeleton>
-        </div>
-      </template>
     </template>
 
-    <slide-y-up-transition>
-      <ec-home-cards
-        v-if="hasLoadedOnce"
-        :start-date="dateRangeIso.start"
-        :end-date="dateRangeIso.end"
-      />
-    </slide-y-up-transition>
+    <template v-if="hasLoadedOnce">
+      <slide-y-up-transition>
+        <ec-onboarding
+          v-if="canShowOnboarding"
+          :ecom-auth="ecomAuth"
+        />
+      </slide-y-up-transition>
+      <button
+        v-if="!canShowOnboarding"
+        class="btn btn-light"
+        @click="canShowOnboarding = true"
+      >
+        <i class="fa fa-question-circle mr-1"></i>
+        {{ i19firstSteps }}
+      </button>
+    </template>
   </div>
 </template>
 

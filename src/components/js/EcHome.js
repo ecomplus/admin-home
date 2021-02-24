@@ -4,6 +4,7 @@ import {
   i19comparedPreviousPeriodMsg,
   i19domain,
   i19editStorefront,
+  // i19firstSteps,
   i19goToStore,
   i19invalidDomainName,
   i19newOrders,
@@ -28,6 +29,7 @@ import { ShareNetwork } from 'vue-social-sharing'
 import EcDatesPicker from '../EcDatesPicker.vue'
 import EcOrdersGraphs from '../EcOrdersGraphs.vue'
 import EcHomeCards from '../EcHomeCards.vue'
+import EcOnboarding from '../EcOnboarding.vue'
 
 const i19totalAmount = 'Montante total'
 
@@ -46,7 +48,8 @@ export default {
     ShareNetwork,
     EcDatesPicker,
     EcOrdersGraphs,
-    EcHomeCards
+    EcHomeCards,
+    EcOnboarding
   },
 
   props: {
@@ -81,7 +84,9 @@ export default {
       isLoadingMetrics: false,
       hasLoadedAllMetrics: false,
       hasLoadedOrdersGraphs: false,
-      hasLoadedOnce: false
+      hasLoadedOnce: false,
+      hasNoOrders: false,
+      canShowOnboarding: false
     }
   },
 
@@ -91,6 +96,7 @@ export default {
     i19comparedPreviousPeriodMsg: () => i18n(i19comparedPreviousPeriodMsg),
     i19domain: () => i18n(i19domain),
     i19editStorefront: () => i18n(i19editStorefront),
+    i19firstSteps: () => 'Primeiros passos',
     i19goToStore: () => i18n(i19goToStore),
     i19invalidDomainName: () => i18n(i19invalidDomainName),
     i19newOrders: () => i18n(i19newOrders),
@@ -313,6 +319,18 @@ export default {
         .finally(() => {
           this.isLoadingMetrics = false
         })
+    },
+
+    hasLoadedOnce () {
+      if (!this.ordersMetrics.countCreated) {
+        this.ecomAuth.requestApi('$count', 'post', {
+          resource: 'orders'
+        })
+          .then(({ data }) => {
+            this.canShowOnboarding = this.hasNoOrders = data.count === 0
+          })
+          .catch(handleApiError)
+      }
     }
   },
 
