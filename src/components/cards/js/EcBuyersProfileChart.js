@@ -1,6 +1,7 @@
 import {
   // i19aboveOf
   i19Gender,
+  // i19notConfigured,
   i19upTo
   // i19years
 } from '@ecomplus/i18n'
@@ -23,12 +24,15 @@ export default {
 
   computed: {
     i19aboveOf: () => 'Acima de',
+    i19notConfigured: () => 'Não configurado',
     i19upTo: () => i18n(i19upTo),
     i19years: () => 'anos'
   },
 
   methods: {
-    i19Gender: prop => i18n(i19Gender)[prop],
+    i19Gender (prop) {
+      return i18n(i19Gender)[prop] || this.i19notConfigured
+    },
 
     setupCharts (aggregation) {
       const year = new Date().getFullYear()
@@ -45,17 +49,19 @@ export default {
         label: `${this.i19aboveOf} 60`,
         minYear: null
       }]
-      const genders = ['f', 'm', 'x']
       const rgbByGender = {
         f: '223, 242, 0',
         m: '3, 169, 179',
-        x: '255, 86, 0'
+        x: '255, 86, 0',
+        _: '214, 214, 219'
       }
       const ordersByGender = {
         f: 0,
         m: 0,
-        x: 0
+        x: 0,
+        _: 0
       }
+      const genders = Object.keys(rgbByGender)
       const aggByAge = ageRanges.map(({ label, minYear }) => {
         return {
           label: `${label} ${this.i19years}`,
@@ -75,12 +81,15 @@ export default {
       }, [])
       let totalOrders = 0
       aggregation.forEach(({ _id, orders }) => {
-        const { birth, gender } = _id
+        let { birth, gender } = _id
+        if (!gender) {
+          gender = '_'
+        }
         ;[aggByAge, aggAgeGender].forEach(groups => {
           for (let i = 0; i < groups.length; i++) {
             const group = groups[i]
             if (!(group.minYear > birth)) {
-              if (gender && gender !== group.gender) {
+              if (group.gender && gender !== group.gender) {
                 continue
               }
               group.orders += orders
@@ -88,9 +97,7 @@ export default {
             }
           }
         })
-        if (gender) {
-          ordersByGender[gender] += orders
-        }
+        ordersByGender[gender] += orders
         totalOrders += orders
       })
       const radar = new Chart(this.$refs['canva-radar'], {
