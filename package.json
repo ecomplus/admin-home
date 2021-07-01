@@ -42,7 +42,7 @@
     "@vue/cli-plugin-vuex": "^4.5.13",
     "@vue/cli-service": "^4.5.13",
     "sass": "^1.35.0",
-    "sass-loader": "^8.0.2",
+    "sass-loader": "^12.1.0",
     "standard": "^16.0.3",
     "standard-version": "^9.3.0",
     "vue-template-compiler": "^2.6.14"
