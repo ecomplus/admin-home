@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0-rc.1](https://github.com/ecomplus/admin-home/compare/v1.1.0-rc.0...v1.1.0-rc.1) (2022-07-06)
+
+
+### Features
+
+* support authentication with url params ([f956986](https://github.com/ecomplus/admin-home/commit/f956986fd1ae6cfb0287808639ba1a2e65631c94))
+
+
+### Bug Fixes
+
+* **deps:** revert vue to 2.6 ([95ee73d](https://github.com/ecomplus/admin-home/commit/95ee73dd51dad3cdb8ef25cfe6f3fd08e36030ee))
+* **deps:** update all non-major dependencies ([#14](https://github.com/ecomplus/admin-home/issues/14)) ([560182e](https://github.com/ecomplus/admin-home/commit/560182e16395a1ca544386a6bd307b092cf58c79))
+* **deps:** update all non-major dependencies ([#16](https://github.com/ecomplus/admin-home/issues/16)) ([2a0b151](https://github.com/ecomplus/admin-home/commit/2a0b15112a85a165bdf62385d2c2355729055069))
+* **deps:** update all non-major dependencies ([#19](https://github.com/ecomplus/admin-home/issues/19)) ([d56e111](https://github.com/ecomplus/admin-home/commit/d56e111f7fca17f9ffcc1ab117e6974f12043844))
+* **deps:** update all non-major dependencies ([#23](https://github.com/ecomplus/admin-home/issues/23)) ([1c202e6](https://github.com/ecomplus/admin-home/commit/1c202e68ccaafe63204b613344126d558cd2bc1e))
+* **deps:** update all non-major dependencies ([#25](https://github.com/ecomplus/admin-home/issues/25)) ([0ecf2c6](https://github.com/ecomplus/admin-home/commit/0ecf2c690dc3c13c15712bac36c374087650d504))
+* **deps:** update dependency core-js to ^3.9.1 ([#6](https://github.com/ecomplus/admin-home/issues/6)) ([2d58863](https://github.com/ecomplus/admin-home/commit/2d58863849a2e87ab638313d40a5dd13024217c6))
+
 ## [1.1.0-rc.0](https://github.com/ecomplus/admin-home/compare/v0.9.4...v1.1.0-rc.0) (2021-02-24)
 
 
