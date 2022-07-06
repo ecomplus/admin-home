@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0-rc.2](https://github.com/ecomplus/admin-home/compare/v1.1.0-rc.1...v1.1.0-rc.2) (2022-07-06)
+
+
+### Bug Fixes
+
+* **deps:** revert vue to 2.6 (semver) ([ba1fd8e](https://github.com/ecomplus/admin-home/commit/ba1fd8e9f1136b4c3b0cead6e30fc9ff5a4fcf9b))
+
 ## [1.1.0-rc.1](https://github.com/ecomplus/admin-home/compare/v1.1.0-rc.0...v1.1.0-rc.1) (2022-07-06)
 
 
