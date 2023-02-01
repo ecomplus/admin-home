@@ -28,15 +28,15 @@
     "bootstrap-vue": "^2.23.1",
     "chart.js": "^2.9.4",
     "chartjs-plugin-annotation": "^0.5.7",
-    "core-js": "^3.27.1",
+    "core-js": "^3.27.2",
     "vue": "2.6.x",
     "vue-social-sharing": "^3.0.9",
     "vue2-daterange-picker": "^0.6.8",
     "vue2-transitions": "^0.3.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.3.0",
-    "@commitlint/config-conventional": "^17.3.0",
+    "@commitlint/cli": "^17.4.2",
+    "@commitlint/config-conventional": "^17.4.2",
     "@vue/cli-plugin-babel": "^4.5.19",
     "@vue/cli-plugin-router": "^4.5.19",
     "@vue/cli-plugin-vuex": "^4.5.19",
