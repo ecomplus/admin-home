@@ -35,8 +35,8 @@
     "vue2-transitions": "^0.3.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.8.1",
-    "@commitlint/config-conventional": "^17.8.1",
+    "@commitlint/cli": "^19.0.3",
+    "@commitlint/config-conventional": "^19.0.3",
     "@vue/cli-plugin-babel": "^4.5.19",
     "@vue/cli-plugin-router": "^4.5.19",
     "@vue/cli-plugin-vuex": "^4.5.19",
