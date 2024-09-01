@@ -28,7 +28,7 @@
     "bootstrap-vue": "^2.23.1",
     "chart.js": "^2.9.4",
     "chartjs-plugin-annotation": "^0.5.7",
-    "core-js": "^3.37.1",
+    "core-js": "^3.38.1",
     "vue": "2.6.x",
     "vue-social-sharing": "^3.0.9",
     "vue2-daterange-picker": "^0.6.8",
